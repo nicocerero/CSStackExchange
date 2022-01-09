@@ -5,7 +5,10 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -158,6 +161,7 @@ public class LoginWindow extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				MainWindow mw = new MainWindow();
 				mw.setVisible(true);
+				setProp(txtUsername1.getText());
 				dispose();
 			}
 			
@@ -185,5 +189,19 @@ public class LoginWindow extends JFrame{
 		});
 		registerButton.setBounds(365, 349, 101, 29);
 		contentPane.add(registerButton);
+	}
+	
+	public static void setProp(String username) {
+		File archivo = new File("username");
+		try {
+			FileOutputStream fos = new FileOutputStream(archivo);
+			Properties propConfig = new Properties();
+			propConfig.setProperty("user", username);
+			propConfig.store(fos, "program Settings");
+			fos.close();
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "ERROR", e);
+			e.printStackTrace();
+		}
 	}
 }
