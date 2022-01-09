@@ -12,6 +12,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import org.bson.Document;
@@ -102,18 +103,22 @@ public class MainWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JLabel lblNewLabel_1 = new JLabel("User: ");
+		JLabel lblNewLabel_1 = new JLabel("User: " + getProp());
 		lblNewLabel_1.setLocation(10, 10);
-		lblNewLabel_1.setSize(50, 25);
+		lblNewLabel_1.setSize(123, 25);
 		panel_1.add(lblNewLabel_1);
 		
-		JList<Document> list = new JList<Document>(model);
+		JList<Document> list = getMongo();
 		list.setBounds(38, 45, 490, 380);
-		panel_1.add(list);
+		//panel_1.add(list);
+		
+		JScrollPane scroll = new JScrollPane(list);
+		scroll.setBounds(38, 45, 490, 380);
+		panel_1.add(scroll);
 
 	}
 
-	/*public static String getProp() {
+	public static String getProp() {
 		File archivo = new File("username");
 		try {
 			FileInputStream fis = new FileInputStream(archivo);
@@ -126,9 +131,10 @@ public class MainWindow extends JFrame {
 			e.printStackTrace();
 			return null;
 		}
-	}*/
+	}
 
-	public List<Document> getMongo() {
+	public JList<Document> getMongo() {
+		JList<Document> list1 = new JList<Document>(model);
 		MongoDBConnector.connect();
 		MongoDBConnector.collection.getNamespace();
 
@@ -138,6 +144,6 @@ public class MainWindow extends JFrame {
 			model.addElement(it.next());
 		}
 
-		return null;
+		return list1;
 	}
 }
