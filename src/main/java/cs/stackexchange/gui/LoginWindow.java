@@ -105,7 +105,7 @@ public class LoginWindow extends JFrame{
 		});
 		txtUsername1.setBorder(null);
 		txtUsername1.setFont(new Font("Arial", Font.BOLD, 14));
-		txtUsername1.setText("User");
+		txtUsername1.setText("Username");
 		txtUsername1.setBounds(10, 10, 170, 20);
 		UserBox.add(txtUsername1);
 		txtUsername1.setColumns(10);
