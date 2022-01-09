@@ -65,11 +65,16 @@ public class LoginWindow extends JFrame{
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblCineDeusto = new JLabel("CS StackExchange");
-		lblCineDeusto.setFont(new Font("Arial Nova", Font.PLAIN, 33));
-		lblCineDeusto.setToolTipText("");
-		lblCineDeusto.setBounds(200, 148, 299, 40);
-		contentPane.add(lblCineDeusto);
+		JLabel ImagePanel = new JLabel();
+		ImagePanel.setIcon(new ImageIcon(getClass().getResource("images/logo.png")));
+		ImagePanel.setBounds(261, 10, 158, 128);
+		contentPane.add(ImagePanel);
+		
+		JLabel lblStackExchange = new JLabel("CS StackExchange");
+		lblStackExchange.setFont(new Font("Arial Nova", Font.PLAIN, 33));
+		lblStackExchange.setToolTipText("");
+		lblStackExchange.setBounds(200, 148, 299, 40);
+		contentPane.add(lblStackExchange);
 
 		JPanel UserBox = new JPanel();
 		UserBox.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
@@ -141,15 +146,11 @@ public class LoginWindow extends JFrame{
 		
 		lblLoginMessage1.setForeground(new Color(128, 0, 0));
 		lblLoginMessage1.setFont(new Font("Arial", Font.PLAIN, 12));
-		lblLoginMessage1.setBounds(173, 263, 250, 19);
+		lblLoginMessage1.setBounds(216, 198, 250, 19);
 		contentPane.add(lblLoginMessage1);
 		
-		JLabel ImagePanel = new JLabel();
-		ImagePanel.setIcon(new ImageIcon(getClass().getResource("images/logo.png")));
-		ImagePanel.setBounds(265, 10, 158, 128);
-		contentPane.add(ImagePanel);
-		
 		JButton loginButton = new JButton("Login");
+		loginButton.setFont(new Font("Tahoma", Font.BOLD, 15));
 		loginButton.setForeground(Color.WHITE);
 		loginButton.setBackground(Color.BLACK);
 		loginButton.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
@@ -161,7 +162,28 @@ public class LoginWindow extends JFrame{
 			}
 			
 		});
-		loginButton.setBounds(288, 330, 101, 29);
+		loginButton.setBounds(216, 349, 101, 29);
 		contentPane.add(loginButton);
+		
+		JButton registerButton = new JButton("Register");
+		registerButton.setFont(new Font("Tahoma", Font.BOLD, 15));
+		registerButton.setForeground(Color.WHITE);
+		registerButton.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
+		registerButton.setBackground(Color.BLACK);
+		registerButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegisterWindow rw;
+				try {
+					rw = new RegisterWindow();
+					rw.setVisible(true);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				dispose();
+			}
+			
+		});
+		registerButton.setBounds(365, 349, 101, 29);
+		contentPane.add(registerButton);
 	}
 }

@@ -9,42 +9,14 @@ import org.neo4j.driver.Session;
 import static org.neo4j.driver.Values.parameters;
 
 public class Neo4jConnector implements AutoCloseable {
-	
-	private Driver driver;
 
-    public Neo4jConnector ( String uri, String user, String password )
-    {
-        driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
-    }
+	public static Driver driver;
 
-    public void close() throws Exception
-    {
-        driver.close();
-    }
-
-    public void printGreeting( final String message )
-    {
-        try ( Session session = driver.session() )
-        {
-            String greeting = session.writeTransaction( tx ->
-                                                        {
-                                                            Result result = tx.run( "CREATE (a:Greeting) " +
-                                                                                    "SET a.message = $message " +
-                                                                                    "RETURN a.message + ', from node ' + id(a)",
-                                                                                    parameters( "message", message ) );
-                                                            return result.single().get( 0 ).asString();
-                                                        } );
-            System.out.println( greeting );
-        }
-    }
-
-	public static void main(String[] args) throws Exception {
-		
-		try ( Neo4jConnector greeter = new Neo4jConnector ( "bolt://localhost:7687", "neo4j", "12345" ) )
-        {
-            greeter.printGreeting( "hello, world" );
-        }
-
+	public Neo4jConnector(String uri, String user, String password) {
+		driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
 	}
 
+	public void close() throws Exception {
+		driver.close();
+	}
 }
