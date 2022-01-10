@@ -79,6 +79,7 @@ public class MainWindow extends JFrame {
 
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.WHITE);
+		panel.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
 		contentPane.add(panel, BorderLayout.WEST);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 35, 55, 40 };
@@ -87,7 +88,7 @@ public class MainWindow extends JFrame {
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel lblNewLabel_1 = new JLabel("User: " + getProp());
+		JLabel lblNewLabel_1 = new JLabel("User: " + getProp().toString());
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_1.gridx = 1;
@@ -113,6 +114,15 @@ public class MainWindow extends JFrame {
 		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton.gridx = 1;
 		gbc_btnNewButton.gridy = 3;
+		btnNewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ProfileWindow pw = new ProfileWindow();
+				pw.setVisible(true);
+				dispose();	
+			}
+		});
 		panel.add(btnNewButton, gbc_btnNewButton);
 
 		JPanel panel_1 = new JPanel();
@@ -124,7 +134,7 @@ public class MainWindow extends JFrame {
 		list.setBounds(38, 45, 490, 380);
 
 		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(0, 47, 551, 371);
+		scroll.setBounds(0, 47, 536, 371);
 		panel_1.add(scroll);
 
 		JLabel lblStackExchange = new JLabel("CS StackExchange");
@@ -144,8 +154,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				list.getSelectedValue();
-				
+				list.getSelectedValue();	
 			}
 			
 		});
@@ -172,7 +181,7 @@ public class MainWindow extends JFrame {
 		JList<Document> list1 = new JList<Document>(model);
 		MongoDBConnector.connect();
 
-		Bson projection = fields(include("title", "score", "viewCount"), excludeId());
+		Bson projection = fields(include("title", "score"), excludeId());
 		FindIterable<Document> iterDoc = MongoDBConnector.collection.find(eq("postTypeId", 1)).projection(projection)
 				.sort(descending("score"));
 		Iterator<Document> it = iterDoc.iterator();

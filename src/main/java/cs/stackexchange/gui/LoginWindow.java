@@ -8,7 +8,6 @@ import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Driver;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,10 +16,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
 import cs.stackexchange.bd.Neo4jConnector;
@@ -43,6 +42,9 @@ public class LoginWindow extends JFrame{
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	static Neo4jConnector neo4j;
+	
+	Result result;
+	String un;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -127,15 +129,12 @@ public class LoginWindow extends JFrame{
 		loginButton.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(checkUser(txtUsername1.getText()) == true) {
+				if(checkUser(txtUsername1.getText()).equals(un)) {
+					setProp(txtUsername1.getText());
 					MainWindow mw = new MainWindow();
 					mw.setVisible(true);
-					setProp(txtUsername1.getText());
 					dispose();
-				}else {
-					lblLoginMessage1.setText("User not found!");
 				}
-				
 			}
 			
 		});
@@ -165,7 +164,7 @@ public class LoginWindow extends JFrame{
 	}
 	
 	public static void setProp(String username) {
-		File archivo = new File("username");
+		File archivo = new File("resources/username");
 		try {
 			FileOutputStream fos = new FileOutputStream(archivo);
 			Properties propConfig = new Properties();
@@ -178,16 +177,20 @@ public class LoginWindow extends JFrame{
 		}
 	}
 	
-	public boolean checkUser(String username) {
+	public String checkUser(String username) {
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
-		Session session = driver.session();
-		try{
-			session.run("MATCH (u:User) WHERE u.displayName = '" + username + "' RETURN u");
-			System.out.println("Username found");
-			return true;
+		
+		try(Session session = driver.session()){
+			session.readTransaction(tx -> {
+				result = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.username");
+				un = result.single().get(0).asString();
+				return un;
+			});
+			return un;
 		}catch(Exception e) {
 			logger.log(Level.INFO, "ERROR", e);
-			return false;
+			lblLoginMessage1.setText("User not found!");
+			return null;
 		}
 		
 	}
