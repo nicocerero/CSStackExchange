@@ -152,7 +152,7 @@ public class ProfileWindow extends JFrame {
 		
 		JLabel lblReputation_1 = new JLabel("Creation Date: " + un3);
 		lblReputation_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblReputation_1.setBounds(67, 108, 341, 34);
+		lblReputation_1.setBounds(67, 108, 459, 34);
 		panel_1.add(lblReputation_1);
 		
 		btnConfirm = new JButton("Confirm");
