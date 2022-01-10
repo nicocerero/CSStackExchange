@@ -8,6 +8,7 @@ import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Driver;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +21,12 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import org.neo4j.driver.Session;
+
+import cs.stackexchange.bd.Neo4jConnector;
+
+import static cs.stackexchange.bd.Neo4jConnector.driver;
+
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.JButton;
@@ -31,14 +38,12 @@ public class LoginWindow extends JFrame{
 	
 	private JPanel contentPane;
 	private JTextField txtUsername1;
-	private JPasswordField txtPassword1;
 	private JLabel lblLoginMessage1 = new JLabel("");
 	
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-
-	/**
-	 * 
-	 */
+	
+	static Neo4jConnector neo4j;
+	
 	private static final long serialVersionUID = 1L;
 
 	public static void main(String[] args) {
@@ -82,7 +87,7 @@ public class LoginWindow extends JFrame{
 		JPanel UserBox = new JPanel();
 		UserBox.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
 		UserBox.setBackground(Color.WHITE);
-		UserBox.setBounds(216, 219, 250, 40);
+		UserBox.setBounds(216, 227, 250, 40);
 		contentPane.add(UserBox);
 		UserBox.setLayout(null);
 
@@ -109,43 +114,6 @@ public class LoginWindow extends JFrame{
 		txtUsername1.setBounds(10, 10, 170, 20);
 		UserBox.add(txtUsername1);
 		txtUsername1.setColumns(10);
-
-		JPanel PassBox = new JPanel();
-		PassBox.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
-		PassBox.setBackground(Color.WHITE);
-		PassBox.setBounds(216, 269, 250, 40);
-		contentPane.add(PassBox);
-		PassBox.setLayout(null);
-
-		txtPassword1 = new JPasswordField();
-		txtPassword1.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				if (txtPassword1.getText().equals("Password")) {
-					txtPassword1.setText("");
-					txtPassword1.setEchoChar('\u25CF');
-					
-				} else {
-					txtPassword1.selectAll();
-					txtPassword1.setEchoChar('\u25CF');
-				}
-
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (txtPassword1.getText().equals("")) {
-					txtPassword1.setText("Password");
-					txtPassword1.setEchoChar((char) 0);
-				}
-			}
-		});
-		txtPassword1.setBorder(null);
-		txtPassword1.setEchoChar((char) 0);
-		txtPassword1.setFont(new Font("Arial", Font.BOLD, 14));
-		txtPassword1.setText("Password");
-		txtPassword1.setBounds(10, 10, 170, 20);
-		PassBox.add(txtPassword1);
 		
 		lblLoginMessage1.setForeground(new Color(128, 0, 0));
 		lblLoginMessage1.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -159,14 +127,19 @@ public class LoginWindow extends JFrame{
 		loginButton.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MainWindow mw = new MainWindow();
-				mw.setVisible(true);
-				setProp(txtUsername1.getText());
-				dispose();
+				if(checkUser(txtUsername1.getText()) == true) {
+					MainWindow mw = new MainWindow();
+					mw.setVisible(true);
+					setProp(txtUsername1.getText());
+					dispose();
+				}else {
+					lblLoginMessage1.setText("User not found!");
+				}
+				
 			}
 			
 		});
-		loginButton.setBounds(216, 349, 101, 29);
+		loginButton.setBounds(216, 315, 101, 29);
 		contentPane.add(loginButton);
 		
 		JButton registerButton = new JButton("Register");
@@ -187,7 +160,7 @@ public class LoginWindow extends JFrame{
 			}
 			
 		});
-		registerButton.setBounds(365, 349, 101, 29);
+		registerButton.setBounds(365, 315, 101, 29);
 		contentPane.add(registerButton);
 	}
 	
@@ -203,5 +176,19 @@ public class LoginWindow extends JFrame{
 			logger.log(Level.WARNING, "ERROR", e);
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean checkUser(String username) {
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+		Session session = driver.session();
+		try{
+			session.run("MATCH (u:User) WHERE u.displayName = '" + username + "' RETURN u");
+			System.out.println("Username found");
+			return true;
+		}catch(Exception e) {
+			logger.log(Level.INFO, "ERROR", e);
+			return false;
+		}
+		
 	}
 }

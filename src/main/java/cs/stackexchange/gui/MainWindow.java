@@ -3,7 +3,6 @@ package cs.stackexchange.gui;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
