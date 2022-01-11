@@ -32,6 +32,8 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,7 +44,7 @@ import javax.swing.UIManager;
 
 public class MainWindow extends JFrame {
 
-	private DefaultListModel<Document> model = new DefaultListModel<Document>();
+	private DefaultListModel<String> model = new DefaultListModel<String>();
 
 	private JPanel contentPane;
 
@@ -79,13 +81,15 @@ public class MainWindow extends JFrame {
 
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.WHITE);
-		panel.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
+		panel.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
 		contentPane.add(panel, BorderLayout.WEST);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 35, 55, 40 };
-		gbl_panel.rowHeights = new int[] { 35, 0, 0, 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gbl_panel.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
 		JLabel lblNewLabel_1 = new JLabel("User: " + getProp().toString());
@@ -95,42 +99,73 @@ public class MainWindow extends JFrame {
 		gbc_lblNewLabel_1.gridy = 0;
 		panel.add(lblNewLabel_1, gbc_lblNewLabel_1);
 
+		JButton btnNewButton = new JButton("Profile");
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
+		gbc_btnNewButton.gridx = 1;
+		gbc_btnNewButton.gridy = 5;
+		btnNewButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ProfileWindow pw = new ProfileWindow();
+				pw.setVisible(true);
+				dispose();
+			}
+		});
+
 		JLabel lblNewLabel = new JLabel("MENU");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel.gridx = 1;
-		gbc_lblNewLabel.gridy = 1;
+		gbc_lblNewLabel.gridy = 3;
 		panel.add(lblNewLabel, gbc_lblNewLabel);
 
 		JButton btnNewButton_1 = new JButton("Home");
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton_1.gridx = 1;
-		gbc_btnNewButton_1.gridy = 2;
+		gbc_btnNewButton_1.gridy = 4;
 		panel.add(btnNewButton_1, gbc_btnNewButton_1);
+		panel.add(btnNewButton, gbc_btnNewButton);
 
-		JButton btnNewButton = new JButton("Profile");
-		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton.gridx = 1;
-		gbc_btnNewButton.gridy = 3;
-		btnNewButton.addActionListener(new ActionListener() {
-			
+		JLabel lblLogout = new JLabel("Logout");
+		lblLogout.setForeground(Color.BLUE);
+		GridBagConstraints gbc_lblLogout = new GridBagConstraints();
+		gbc_lblLogout.gridx = 1;
+		gbc_lblLogout.gridy = 14;
+		lblLogout.addMouseListener(new MouseAdapter() {
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				ProfileWindow pw = new ProfileWindow();
-				pw.setVisible(true);
-				dispose();	
+			public void mouseExited(MouseEvent e) {
+				lblLogout.setForeground(Color.BLUE);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lblLogout.setForeground(Color.RED);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					LoginWindow lw = new LoginWindow();
+					lw.setVisible(true);
+					dispose();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+
 			}
 		});
-		panel.add(btnNewButton, gbc_btnNewButton);
+		panel.add(lblLogout, gbc_lblLogout);
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JList<Document> list = getMongo();
+		JList<String> list = getMongo();
 		list.setBounds(38, 45, 490, 380);
 
 		JScrollPane scroll = new JScrollPane(list);
@@ -154,9 +189,9 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				list.getSelectedValue();	
+				list.getSelectedValue();
 			}
-			
+
 		});
 		panel_1.add(btnSelect);
 
@@ -177,8 +212,8 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public JList<Document> getMongo() {
-		JList<Document> list1 = new JList<Document>(model);
+	public JList<String> getMongo() {
+		JList<String> list1 = new JList<String>(model);
 		MongoDBConnector.connect();
 
 		Bson projection = fields(include("title", "score"), excludeId());
@@ -186,7 +221,7 @@ public class MainWindow extends JFrame {
 				.sort(descending("score"));
 		Iterator<Document> it = iterDoc.iterator();
 		while (it.hasNext()) {
-			model.addElement(it.next());
+			model.addElement(it.next().toString().replace("Document{{","").replace("}}", "").replace(", title="," | Q:").replace("score=", ""));
 		}
 
 		return list1;

@@ -107,6 +107,16 @@ public class ProfileWindow extends JFrame {
 		panel.add(lblNewLabel, gbc_lblNewLabel);
 
 		JButton btnNewButton_1 = new JButton("Home");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MainWindow mw = new MainWindow();
+				mw.setVisible(true);
+				dispose();
+				
+			}
+		});
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton_1.gridx = 1;

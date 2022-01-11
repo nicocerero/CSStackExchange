@@ -134,6 +134,10 @@ public class LoginWindow extends JFrame{
 					MainWindow mw = new MainWindow();
 					mw.setVisible(true);
 					dispose();
+				}else if(txtUsername1.getText().toString().equals("admin")) {
+					AdminWindow aw = new AdminWindow();
+					aw.setVisible(true);
+					dispose();
 				}
 			}
 			

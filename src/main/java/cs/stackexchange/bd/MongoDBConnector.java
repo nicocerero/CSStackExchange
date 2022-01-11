@@ -6,7 +6,6 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.bson.Document;
@@ -35,6 +34,12 @@ public class MongoDBConnector {
 	        System.out.println(document.toJson());
 	    }
 	};
+	public static void main(String[] args) {
+		connect();
+		System.out.println(database.getName());
+		System.out.println(collection.getNamespace());
+		mongoClient.close();
+	}
 	
 }
 
