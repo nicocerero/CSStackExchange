@@ -52,7 +52,9 @@ def get_description(tag: str, session: requests.Session, url: str = URL, params:
     # Extract unknown key (each query returns a random number as key).
     key = list(data["query"]["pages"])[0]
 
-    return data["query"]["pages"][key]["extract"]
+    description = data["query"]["pages"][key]["extract"]
+
+    return description
 
 
 if __name__ == "__main__":
