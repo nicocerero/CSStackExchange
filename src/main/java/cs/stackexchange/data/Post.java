@@ -17,7 +17,7 @@ public class Post {
 	private int answerCount;
 	private int commentCount;
 	private int parentId;
-	
+
 	public Post(int id, int type, int acceptedAnswerId, Date creationDate, int score, int viewCount, String title,
 			String body, int userId, String[] tags, int answerCount, int commentCount) {
 		super();
@@ -33,6 +33,12 @@ public class Post {
 		this.tags = tags;
 		this.answerCount = answerCount;
 		this.commentCount = commentCount;
+	}
+
+	public Post(String title, int score) {
+		super();
+		this.title = title;
+		this.score = score;
 	}
 
 	public int getId() {
@@ -138,5 +144,5 @@ public class Post {
 	public void setParentId(int parentId) {
 		this.parentId = parentId;
 	}
-	
+
 }

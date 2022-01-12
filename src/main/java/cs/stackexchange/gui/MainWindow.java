@@ -1,6 +1,7 @@
 package cs.stackexchange.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.util.Iterator;
 import java.util.Properties;
@@ -23,6 +24,7 @@ import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.*;
 
 import cs.stackexchange.bd.MongoDBConnector;
+import cs.stackexchange.data.Post;
 
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
@@ -44,7 +46,7 @@ import javax.swing.UIManager;
 
 public class MainWindow extends JFrame {
 
-	private DefaultListModel<String> model = new DefaultListModel<String>();
+	private DefaultListModel<Post> model = new DefaultListModel<Post>();
 
 	private JPanel contentPane;
 
@@ -165,7 +167,7 @@ public class MainWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JList<String> list = getMongo();
+		JList<Post> list = getMongo();
 		list.setBounds(38, 45, 490, 380);
 
 		JScrollPane scroll = new JScrollPane(list);
@@ -212,8 +214,8 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public JList<String> getMongo() {
-		JList<String> list1 = new JList<String>(model);
+	public JList<Post> getMongo() {
+		JList<Post> list1 = new JList<Post>(model);
 		MongoDBConnector.connect();
 
 		Bson projection = fields(include("title", "score"), excludeId());
@@ -221,7 +223,15 @@ public class MainWindow extends JFrame {
 				.sort(descending("score"));
 		Iterator<Document> it = iterDoc.iterator();
 		while (it.hasNext()) {
-			model.addElement(it.next().toString().replace("Document{{","").replace("}}", "").replace(", title="," | Q:").replace("score=", ""));
+			Document d = it.next();
+			String title = (String) d.get("title");
+			int score = (int) d.get("score");
+			Post p = new Post(title, score);
+			System.out.println("Imprimiendo post: " + p.toString());
+			model.addElement(p);
+			// model.addElement(it.next().toString().replace("Document{{", "").replace("}}",
+			// "")
+			// .replace(", title=", " | Q:").replace("score=", ""));
 		}
 
 		return list1;
