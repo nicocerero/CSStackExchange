@@ -9,3 +9,11 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+*.xml
+*.json
+.settings/org.eclipse.jdt.core.prefs
+.project
+.classpath
+.project
+.classpath
+.settings/org.eclipse.jdt.core.prefs

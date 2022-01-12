@@ -3,6 +3,7 @@ package cs.stackexchange.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -167,7 +168,7 @@ public class MainWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JList<Post> list = getMongo();
+		JList<Post> list = getTopPosts();
 		list.setBounds(38, 45, 490, 380);
 
 		JScrollPane scroll = new JScrollPane(list);
@@ -191,7 +192,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				list.getSelectedValue();
+				Post p = list.getSelectedValue();
 			}
 
 		});
@@ -214,26 +215,85 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public JList<Post> getMongo() {
+	public JList<Post> getTopPosts() {
 		JList<Post> list1 = new JList<Post>(model);
 		MongoDBConnector.connect();
 
-		Bson projection = fields(include("title", "score"), excludeId());
-		FindIterable<Document> iterDoc = MongoDBConnector.collection.find(eq("postTypeId", 1)).projection(projection)
-				.sort(descending("score"));
-		Iterator<Document> it = iterDoc.iterator();
+		Bson projection = fields(include("title", "score", "id"), excludeId());
+		Iterator<Document> it = MongoDBConnector.collection
+				.find(eq("postTypeId", 1))
+				.projection(projection)
+				.sort(descending("score"))
+				.limit(10)
+				.iterator();
+
 		while (it.hasNext()) {
 			Document d = it.next();
-			String title = (String) d.get("title");
-			int score = (int) d.get("score");
-			Post p = new Post(title, score);
+			Post p = new Post();
+			p.setTitle((String) d.get("title"));
+			p.setId((int) d.get("id"));
+			p.setScore((int) d.get("score"));
+
 			System.out.println("Imprimiendo post: " + p.toString());
 			model.addElement(p);
-			// model.addElement(it.next().toString().replace("Document{{", "").replace("}}",
-			// "")
-			// .replace(", title=", " | Q:").replace("score=", ""));
 		}
 
 		return list1;
 	}
+
+	/**
+	 * Post -> title, body, tags, votes, comments, ...
+	 * Answers -> title, body, votes, comment, ordered by votes (first always
+	 * correct answer).
+	 */
+	public JList<Post> getPostById(int id) {
+		JList<Post> list1 = new JList<Post>(model);
+		MongoDBConnector.connect();
+
+		// First get the question Post
+		Iterator<Document> it = MongoDBConnector.collection
+				.find(eq("id", id))
+				.iterator();
+
+		if (!it.hasNext()) {
+			logger.log(Level.SEVERE, "Post by ID not found.");
+			return null;
+		}
+		Document d = it.next();
+		Post p = new Post(d);
+		model.addElement(p); // Always the first one on the list, 2nd is accepted answer if it exists.
+
+		// If Post has an acceptedAnswerId, then get that one first, 10 total
+		// answers ranked by upvotes
+
+		ArrayList<Post> temp = new ArrayList<>();
+		it = MongoDBConnector.collection
+				.find(eq("parentId", p.getId()))
+				.limit(10)
+				.iterator();
+
+		while (it.hasNext()) {
+			Post pTemp = new Post(it.next());
+			temp.add(pTemp);
+		}
+
+		if (p.getAcceptedAnswerId() != 0) { // That is, there is an accepted answer.
+			for (Post po : temp) {
+				if (po.getId() == p.getAcceptedAnswerId()) {
+					model.addElement(po);
+					break;
+				}
+			}
+			// Then we delete the element from the list
+			temp.removeIf(po -> po.getId() == p.getAcceptedAnswerId());
+		}
+
+		// Now we add the rest of the answers
+		for (Post po : temp) {
+			model.addElement(po);
+		}
+
+		return list1;
+	}
+
 }

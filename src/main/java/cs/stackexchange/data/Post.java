@@ -2,43 +2,58 @@ package cs.stackexchange.data;
 
 import java.util.Date;
 
+import org.bson.Document;
+
 public class Post {
 
 	private int id;
-	private int type;
+	private int postTypeId;
 	private int acceptedAnswerId;
 	private Date creationDate;
 	private int score;
 	private int viewCount;
 	private String title;
 	private String body;
-	private int userId;
-	private String tags[];
-	private int answerCount;
-	private int commentCount;
+	private int ownerUserId;
+	private Tag tags[];
+	private Comment comments[];
 	private int parentId;
 
-	public Post(int id, int type, int acceptedAnswerId, Date creationDate, int score, int viewCount, String title,
-			String body, int userId, String[] tags, int answerCount, int commentCount) {
+	public Post(int id, int postTypeId, int acceptedAnswerId, Date creationDate, int score, int viewCount, String title,
+			String body, int ownerUserId, Tag[] tags, Comment[] comments, int parentId) {
 		super();
 		this.id = id;
-		this.type = type;
+		this.postTypeId = postTypeId;
 		this.acceptedAnswerId = acceptedAnswerId;
 		this.creationDate = creationDate;
 		this.score = score;
 		this.viewCount = viewCount;
 		this.title = title;
 		this.body = body;
-		this.userId = userId;
+		this.ownerUserId = ownerUserId;
 		this.tags = tags;
-		this.answerCount = answerCount;
-		this.commentCount = commentCount;
+		this.comments = comments;
+		this.parentId = parentId;
 	}
 
-	public Post(String title, int score) {
+	public Post() {
 		super();
-		this.title = title;
-		this.score = score;
+	}
+
+	public Post(Document d) {
+		super();
+		this.id = (int) d.get("id");
+		this.postTypeId = (int) d.get("type");
+		this.acceptedAnswerId = (int) d.get("acceptedAnswerId");
+		this.creationDate = (Date) d.get("creationDate");
+		this.score = (int) d.get("score");
+		this.viewCount = (int) d.get("viewCount");
+		this.title = (String) d.get("title");
+		this.body = (String) d.get("body");
+		this.ownerUserId = (int) d.get("ownerUserId");
+		this.tags = (Tag[]) d.get("tags");
+		this.comments = (Comment[]) d.get("comments");
+		this.parentId = (int) d.get("parentId");
 	}
 
 	public int getId() {
@@ -50,11 +65,11 @@ public class Post {
 	}
 
 	public int getType() {
-		return type;
+		return postTypeId;
 	}
 
 	public void setType(int type) {
-		this.type = type;
+		this.postTypeId = type;
 	}
 
 	public int getAcceptedAnswerId() {
@@ -106,35 +121,27 @@ public class Post {
 	}
 
 	public int getUserId() {
-		return userId;
+		return ownerUserId;
 	}
 
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setUserId(int ownerUserId) {
+		this.ownerUserId = ownerUserId;
 	}
 
-	public String[] getTags() {
+	public Tag[] getTags() {
 		return tags;
 	}
 
-	public void setTags(String[] tags) {
+	public void setTags(Tag[] tags) {
 		this.tags = tags;
 	}
 
-	public int getAnswerCount() {
-		return answerCount;
+	public Comment[] getComments() {
+		return comments;
 	}
 
-	public void setAnswerCount(int answerCount) {
-		this.answerCount = answerCount;
-	}
-
-	public int getCommentCount() {
-		return commentCount;
-	}
-
-	public void setCommentCount(int commentCount) {
-		this.commentCount = commentCount;
+	public void setComments(Comment comments[]) {
+		this.comments = comments;
 	}
 
 	public int getParentId() {
@@ -143,6 +150,11 @@ public class Post {
 
 	public void setParentId(int parentId) {
 		this.parentId = parentId;
+	}
+
+	@Override
+	public String toString() {
+		return "Post (id:" + id + ") [score=" + score + ", title=" + title + "]";
 	}
 
 }
