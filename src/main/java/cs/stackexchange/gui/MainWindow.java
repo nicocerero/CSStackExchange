@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -192,6 +193,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// TODO: create new window.
 				Post p = list.getSelectedValue();
 			}
 
@@ -271,6 +273,10 @@ public class MainWindow extends JFrame {
 				.find(eq("parentId", p.getId()))
 				.limit(10)
 				.iterator();
+
+		if (!it.hasNext()) {
+			return list1;
+		}
 
 		while (it.hasNext()) {
 			Post pTemp = new Post(it.next());
