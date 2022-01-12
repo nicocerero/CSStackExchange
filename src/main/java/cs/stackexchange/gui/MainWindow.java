@@ -195,6 +195,7 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO: create new window.
 				Post p = list.getSelectedValue();
+				getPostById(p.getId());
 			}
 
 		});
