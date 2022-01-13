@@ -1,16 +1,25 @@
 package cs.stackexchange.data;
 
+import org.bson.Document;
+
 public class Tag {
-	
+
 	private int id;
 	private String tagName;
-	private int count;
-	
-	public Tag(int id, String tagName, int count) {
+	private String description;
+
+	public Tag(int id, String tagName, String description) {
 		super();
 		this.id = id;
 		this.tagName = tagName;
-		this.count = count;
+		this.description = description;
+	}
+
+	public Tag(Document d) {
+		super();
+		this.id = (int) d.get("id");
+		this.tagName = (String) d.get("tagName");
+		this.description = (String) d.get("description");
 	}
 
 	public int getId() {
@@ -29,12 +38,12 @@ public class Tag {
 		this.tagName = tagName;
 	}
 
-	public int getCount() {
-		return count;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setCount(int count) {
-		this.count = count;
+	public void getDescription(String description) {
+		this.description = description;
 	}
-	
+
 }

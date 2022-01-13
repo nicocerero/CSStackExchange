@@ -1,28 +1,32 @@
 package cs.stackexchange.data;
 
-import java.util.Date;
+import org.bson.Document;
 
 public class Comment {
-	
+
 	private int id;
 	private int postId;
-	private int score;
 	private String text;
-	private Date creationDate;
 	private int userId;
-	
-	public Comment(int id, int postId, int score, String text, Date creationDate, int userId) {
+
+	public Comment(int id, int postId, String text, int userId) {
 		super();
 		this.id = id;
 		this.postId = postId;
-		this.score = score;
 		this.text = text;
-		this.creationDate = creationDate;
 		this.userId = userId;
 	}
 
 	public Comment() {
-		// TODO Auto-generated constructor stub
+	}
+
+	public Comment(Document d) {
+		super();
+		this.id = (int) d.get("id");
+		this.postId = (int) d.get("postId");
+		this.text = (String) d.get("text");
+		this.userId = (int) d.get("userId");
+
 	}
 
 	public int getId() {
@@ -41,28 +45,12 @@ public class Comment {
 		this.postId = postId;
 	}
 
-	public int getScore() {
-		return score;
-	}
-
-	public void setScore(int score) {
-		this.score = score;
-	}
-
 	public String getText() {
 		return text;
 	}
 
 	public void setText(String text) {
 		this.text = text;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
 	}
 
 	public int getUserId() {
@@ -72,5 +60,5 @@ public class Comment {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-	
+
 }

@@ -1,7 +1,9 @@
 package cs.stackexchange.data;
 
+import java.util.ArrayList;
 import java.util.Date;
 
+import java.util.Iterator;
 import org.bson.Document;
 
 public class Post {
@@ -15,12 +17,12 @@ public class Post {
 	private String title;
 	private String body;
 	private int ownerUserId;
-	private Tag tags[];
-	private Comment comments[];
+	private ArrayList<Tag> tags;
+	private ArrayList<Comment> comments;
 	private int parentId;
 
 	public Post(int id, int postTypeId, int acceptedAnswerId, Date creationDate, int score, int viewCount, String title,
-			String body, int ownerUserId, Tag[] tags, Comment[] comments, int parentId) {
+			String body, int ownerUserId, ArrayList<Tag> tags, ArrayList<Comment> comments, int parentId) {
 		super();
 		this.id = id;
 		this.postTypeId = postTypeId;
@@ -51,9 +53,26 @@ public class Post {
 		this.title = (String) d.get("title");
 		this.body = (String) d.get("body");
 		this.ownerUserId = (int) d.get("ownerUserId");
-		this.tags = (Tag[]) d.get("tags");
-		this.comments = (Comment[]) d.get("comments");
 		this.parentId = (int) d.get("parentId");
+		// Now, handle the iterators for Tags and Comments.
+		this.tags = new ArrayList<>();
+		@SuppressWarnings("unchecked")
+		Iterator<Document> it_tag = (Iterator<Document>) d.get("tags");
+		while (it_tag.hasNext()) {
+			Tag t = new Tag(it_tag.next());
+			if (t != null) {
+				this.tags.add(t);
+			}
+		}
+		this.comments = new ArrayList<>();
+		@SuppressWarnings("unchecked")
+		Iterator<Document> it_com = (Iterator<Document>) d.get("comments");
+		while (it_com.hasNext()) {
+			Comment c = new Comment(it_com.next());
+			if (c != null) {
+				this.comments.add(c);
+			}
+		}
 	}
 
 	public int getId() {
@@ -128,19 +147,19 @@ public class Post {
 		this.ownerUserId = ownerUserId;
 	}
 
-	public Tag[] getTags() {
+	public ArrayList<Tag> getTags() {
 		return tags;
 	}
 
-	public void setTags(Tag[] tags) {
+	public void setTags(ArrayList<Tag> tags) {
 		this.tags = tags;
 	}
 
-	public Comment[] getComments() {
+	public ArrayList<Comment> getComments() {
 		return comments;
 	}
 
-	public void setComments(Comment comments[]) {
+	public void setComments(ArrayList<Comment> comments) {
 		this.comments = comments;
 	}
 
