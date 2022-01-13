@@ -67,6 +67,16 @@ public class AdminWindow extends JFrame{
 		btnAdministrateUsers.setFont(new Font("Tahoma", Font.BOLD, 15));
 		btnAdministrateUsers.setBackground(new Color(47, 79, 79));
 		btnAdministrateUsers.setBounds(213, 151, 250, 50);
+		btnAdministrateUsers.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AdminUsersWindow auw = new AdminUsersWindow();
+				auw.setVisible(true);
+				dispose();
+				
+			}
+		});
 		contentPane.add(btnAdministrateUsers);
 		
 		JLabel lblLogout = new JLabel("Logout");

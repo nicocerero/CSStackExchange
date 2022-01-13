@@ -1,27 +1,22 @@
 package cs.stackexchange.data;
 
+import java.time.LocalDate;
+
 public class User {
 	
 	private int id;
-	private int accountId;
 	private int reputation;
 	private String username;
 	private String aboutMe;
-	private int views;
-	private int upVotes;
-	private int downVotes;
-	
-	public User(int id, int accountId, int reputation, String username, String aboutMe, int views, int upVotes,
-			int downVotes) {
+	private String creationDate;
+
+	public User(int id, int reputation, String username, String aboutMe, String creationDate) {
 		super();
 		this.id = id;
-		this.accountId = accountId;
 		this.reputation = reputation;
 		this.username = username;
 		this.aboutMe = aboutMe;
-		this.views = views;
-		this.upVotes = upVotes;
-		this.downVotes = downVotes;
+		this.creationDate = creationDate;
 	}
 
 	public int getId() {
@@ -30,14 +25,6 @@ public class User {
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public int getAccountId() {
-		return accountId;
-	}
-
-	public void setAccountId(int accountId) {
-		this.accountId = accountId;
 	}
 
 	public int getReputation() {
@@ -63,30 +50,19 @@ public class User {
 	public void setAboutMe(String aboutMe) {
 		this.aboutMe = aboutMe;
 	}
-
-	public int getViews() {
-		return views;
-	}
-
-	public void setViews(int views) {
-		this.views = views;
-	}
-
-	public int getUpVotes() {
-		return upVotes;
-	}
-
-	public void setUpVotes(int upVotes) {
-		this.upVotes = upVotes;
-	}
-
-	public int getDownVotes() {
-		return downVotes;
-	}
-
-	public void setDownVotes(int downVotes) {
-		this.downVotes = downVotes;
-	}
 	
+
+	public String getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(String creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + "]";
+	}
 	
 }

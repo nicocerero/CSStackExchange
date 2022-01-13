@@ -16,10 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
-
 import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.*;
 
 import cs.stackexchange.bd.MongoDBConnector;
@@ -42,12 +39,15 @@ import javax.swing.JList;
 import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
+import javax.swing.JTextArea;
 
-public class MainWindow extends JFrame {
+public class QuestionWindow extends JFrame {
 
 	private DefaultListModel<Post> model = new DefaultListModel<Post>();
 
 	private JPanel contentPane;
+	
+	public static Post post = new Post();
 
 	private static final long serialVersionUID = 1L;
 
@@ -58,8 +58,9 @@ public class MainWindow extends JFrame {
 			public void run() {
 				try {
 
-					MainWindow frame = new MainWindow();
+					QuestionWindow frame = new QuestionWindow(post.getId());
 					frame.setVisible(true);
+					System.out.println("");
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
 				}
@@ -67,7 +68,7 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	public MainWindow() {
+	public QuestionWindow(int id) {
 
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
@@ -100,12 +101,12 @@ public class MainWindow extends JFrame {
 		gbc_lblNewLabel_1.gridy = 0;
 		panel.add(lblNewLabel_1, gbc_lblNewLabel_1);
 
-		JButton btnNewButton = new JButton("Profile");
-		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton.gridx = 1;
-		gbc_btnNewButton.gridy = 5;
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnProfile = new JButton("Profile");
+		GridBagConstraints gbc_btnProfile = new GridBagConstraints();
+		gbc_btnProfile.insets = new Insets(0, 0, 5, 0);
+		gbc_btnProfile.gridx = 1;
+		gbc_btnProfile.gridy = 5;
+		btnProfile.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -115,20 +116,30 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		JLabel lblNewLabel = new JLabel("MENU");
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel.gridx = 1;
-		gbc_lblNewLabel.gridy = 3;
-		panel.add(lblNewLabel, gbc_lblNewLabel);
+		JLabel lblMenu = new JLabel("MENU");
+		GridBagConstraints gbc_lblMenu = new GridBagConstraints();
+		gbc_lblMenu.insets = new Insets(0, 0, 5, 0);
+		gbc_lblMenu.gridx = 1;
+		gbc_lblMenu.gridy = 3;
+		panel.add(lblMenu, gbc_lblMenu);
 
-		JButton btnNewButton_1 = new JButton("Home");
-		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton_1.gridx = 1;
-		gbc_btnNewButton_1.gridy = 4;
-		panel.add(btnNewButton_1, gbc_btnNewButton_1);
-		panel.add(btnNewButton, gbc_btnNewButton);
+		JButton btnHome = new JButton("Home");
+		GridBagConstraints gbc_btnHome = new GridBagConstraints();
+		gbc_btnHome.insets = new Insets(0, 0, 5, 0);
+		gbc_btnHome.gridx = 1;
+		gbc_btnHome.gridy = 4;
+		btnHome.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MainWindow mw = new MainWindow();
+				mw.setVisible(true);
+				dispose();
+				
+			}
+		});
+		panel.add(btnHome, gbc_btnHome);
+		panel.add(btnProfile, gbc_btnProfile);
 
 		JLabel lblLogout = new JLabel("Logout");
 		lblLogout.setForeground(Color.BLUE);
@@ -166,11 +177,11 @@ public class MainWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JList<Post> list = getTopPosts();
+		JList<Post> list = getPostById(id);
 		list.setBounds(38, 45, 490, 380);
 
 		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(0, 47, 536, 371);
+		scroll.setBounds(0, 176, 536, 276);
 		panel_1.add(scroll);
 
 		JLabel lblStackExchange = new JLabel("CS StackExchange");
@@ -178,8 +189,21 @@ public class MainWindow extends JFrame {
 		lblStackExchange.setFont(new Font("Arial Nova", Font.PLAIN, 33));
 		lblStackExchange.setBounds(118, 0, 299, 50);
 		panel_1.add(lblStackExchange);
+		
+		JTextArea txtQuestion = new JTextArea();
+		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 20));
+		txtQuestion.setLineWrap(true);
+		txtQuestion.setWrapStyleWord(true);
+		txtQuestion.setText("Q: " + post.getTitle());
+		txtQuestion.setEditable(false);
+		txtQuestion.setBounds(27, 74, 486, 69);
+		panel_1.add(txtQuestion);
+		
+		JLabel lblScore = new JLabel("Score: " + post.getScore());
+		lblScore.setBounds(27, 153, 64, 13);
+		panel_1.add(lblScore);
 
-		JButton btnSelect = new JButton("Select");
+		/*JButton btnSelect = new JButton("Select");
 		btnSelect.setForeground(Color.WHITE);
 		btnSelect.setFont(new Font("Tahoma", Font.BOLD, 15));
 		btnSelect.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
@@ -190,14 +214,13 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				QuestionWindow qw = new QuestionWindow(list.getSelectedValue().getId());
-				QuestionWindow.post.setId(list.getSelectedValue().getId());
-				qw.setVisible(true);
-				dispose();
+				// TODO: create new window.
+				Post p = list.getSelectedValue();
+				getPostById(p.getId());
 			}
 
 		});
-		panel_1.add(btnSelect);
+		panel_1.add(btnSelect);*/
 
 	}
 
@@ -216,7 +239,7 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public JList<Post> getTopPosts() {
+	/*public JList<Post> getTopPosts() {
 		JList<Post> list1 = new JList<Post>(model);
 		MongoDBConnector.connect();
 
@@ -240,7 +263,7 @@ public class MainWindow extends JFrame {
 		}
 
 		return list1;
-	}
+	}*/
 
 	/**
 	 * Post -> title, body, tags, votes, comments, ...
@@ -262,7 +285,7 @@ public class MainWindow extends JFrame {
 		}
 		Document d = it.next();
 		Post p = new Post(d);
-		model.addElement(p); // Always the first one on the list, 2nd is accepted answer if it exists.
+		//model.addElement(p); // Always the first one on the list, 2nd is accepted answer if it exists.
 
 		// If Post has an acceptedAnswerId, then get that one first, 10 total
 		// answers ranked by upvotes
@@ -270,6 +293,7 @@ public class MainWindow extends JFrame {
 		ArrayList<Post> temp = new ArrayList<>();
 		it = MongoDBConnector.collection
 				.find(eq("parentId", p.getId()))
+				.sort(descending("score"))
 				.limit(10)
 				.iterator();
 
@@ -300,5 +324,4 @@ public class MainWindow extends JFrame {
 
 		return list1;
 	}
-
 }

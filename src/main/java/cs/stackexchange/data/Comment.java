@@ -21,6 +21,10 @@ public class Comment {
 		this.userId = userId;
 	}
 
+	public Comment() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getId() {
 		return id;
 	}
