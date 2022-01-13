@@ -57,7 +57,6 @@ public class MainWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-
 					MainWindow frame = new MainWindow();
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -191,7 +190,6 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				QuestionWindow qw = new QuestionWindow(list.getSelectedValue().getId());
-				QuestionWindow.post.setId(list.getSelectedValue().getId());
 				qw.setVisible(true);
 				dispose();
 			}

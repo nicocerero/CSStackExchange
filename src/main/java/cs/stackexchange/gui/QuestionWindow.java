@@ -46,8 +46,8 @@ public class QuestionWindow extends JFrame {
 	private DefaultListModel<Post> model = new DefaultListModel<Post>();
 
 	private JPanel contentPane;
-	
-	public static Post post = new Post();
+
+	public static Post post;
 
 	private static final long serialVersionUID = 1L;
 
@@ -60,7 +60,6 @@ public class QuestionWindow extends JFrame {
 
 					QuestionWindow frame = new QuestionWindow(post.getId());
 					frame.setVisible(true);
-					System.out.println("");
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
 				}
@@ -69,7 +68,6 @@ public class QuestionWindow extends JFrame {
 	}
 
 	public QuestionWindow(int id) {
-
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -129,13 +127,13 @@ public class QuestionWindow extends JFrame {
 		gbc_btnHome.gridx = 1;
 		gbc_btnHome.gridy = 4;
 		btnHome.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MainWindow mw = new MainWindow();
 				mw.setVisible(true);
 				dispose();
-				
+
 			}
 		});
 		panel.add(btnHome, gbc_btnHome);
@@ -177,19 +175,12 @@ public class QuestionWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JList<Post> list = getPostById(id);
-		list.setBounds(38, 45, 490, 380);
-
-		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(0, 176, 536, 276);
-		panel_1.add(scroll);
-
 		JLabel lblStackExchange = new JLabel("CS StackExchange");
 		lblStackExchange.setToolTipText("");
 		lblStackExchange.setFont(new Font("Arial Nova", Font.PLAIN, 33));
 		lblStackExchange.setBounds(118, 0, 299, 50);
 		panel_1.add(lblStackExchange);
-		
+
 		JTextArea txtQuestion = new JTextArea();
 		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 20));
 		txtQuestion.setLineWrap(true);
@@ -198,29 +189,41 @@ public class QuestionWindow extends JFrame {
 		txtQuestion.setEditable(false);
 		txtQuestion.setBounds(27, 74, 486, 69);
 		panel_1.add(txtQuestion);
-		
+
 		JLabel lblScore = new JLabel("Score: " + post.getScore());
 		lblScore.setBounds(27, 153, 64, 13);
 		panel_1.add(lblScore);
 
-		/*JButton btnSelect = new JButton("Select");
-		btnSelect.setForeground(Color.WHITE);
-		btnSelect.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btnSelect.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
-				new LineBorder(new Color(0, 0, 0), 2, true)));
-		btnSelect.setBackground(Color.BLACK);
-		btnSelect.setBounds(199, 423, 101, 29);
-		btnSelect.addActionListener(new ActionListener() {
+		/*
+		 * JButton btnSelect = new JButton("Select");
+		 * btnSelect.setForeground(Color.WHITE);
+		 * btnSelect.setFont(new Font("Tahoma", Font.BOLD, 15));
+		 * btnSelect.setBorder(new
+		 * CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+		 * new LineBorder(new Color(0, 0, 0), 2, true)));
+		 * btnSelect.setBackground(Color.BLACK);
+		 * btnSelect.setBounds(199, 423, 101, 29);
+		 * btnSelect.addActionListener(new ActionListener() {
+		 * 
+		 * @Override
+		 * public void actionPerformed(ActionEvent e) {
+		 * // TODO: create new window.
+		 * Post p = list.getSelectedValue();
+		 * getPostById(p.getId());
+		 * }
+		 * 
+		 * });
+		 * panel_1.add(btnSelect);
+		 */
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO: create new window.
-				Post p = list.getSelectedValue();
-				getPostById(p.getId());
-			}
+		// Metodos de BD.
+		JList<Post> list = getPostById(id);
 
-		});
-		panel_1.add(btnSelect);*/
+		list.setBounds(38, 45, 490, 380);
+
+		JScrollPane scroll = new JScrollPane(list);
+		scroll.setBounds(0, 176, 536, 276);
+		panel_1.add(scroll);
 
 	}
 
@@ -239,31 +242,33 @@ public class QuestionWindow extends JFrame {
 		}
 	}
 
-	/*public JList<Post> getTopPosts() {
-		JList<Post> list1 = new JList<Post>(model);
-		MongoDBConnector.connect();
-
-		Bson projection = fields(include("title", "score", "id"), excludeId());
-		Iterator<Document> it = MongoDBConnector.collection
-				.find(eq("postTypeId", 1))
-				.projection(projection)
-				.sort(descending("score"))
-				.limit(10)
-				.iterator();
-
-		while (it.hasNext()) {
-			Document d = it.next();
-			Post p = new Post();
-			p.setTitle((String) d.get("title"));
-			p.setId((int) d.get("id"));
-			p.setScore((int) d.get("score"));
-
-			System.out.println("Imprimiendo post: " + p.toString());
-			model.addElement(p);
-		}
-
-		return list1;
-	}*/
+	/*
+	 * public JList<Post> getTopPosts() {
+	 * JList<Post> list1 = new JList<Post>(model);
+	 * MongoDBConnector.connect();
+	 * 
+	 * Bson projection = fields(include("title", "score", "id"), excludeId());
+	 * Iterator<Document> it = MongoDBConnector.collection
+	 * .find(eq("postTypeId", 1))
+	 * .projection(projection)
+	 * .sort(descending("score"))
+	 * .limit(10)
+	 * .iterator();
+	 * 
+	 * while (it.hasNext()) {
+	 * Document d = it.next();
+	 * Post p = new Post();
+	 * p.setTitle((String) d.get("title"));
+	 * p.setId((int) d.get("id"));
+	 * p.setScore((int) d.get("score"));
+	 * 
+	 * System.out.println("Imprimiendo post: " + p.toString());
+	 * model.addElement(p);
+	 * }
+	 * 
+	 * return list1;
+	 * }
+	 */
 
 	/**
 	 * Post -> title, body, tags, votes, comments, ...
@@ -284,15 +289,13 @@ public class QuestionWindow extends JFrame {
 			return null;
 		}
 		Document d = it.next();
-		Post p = new Post(d);
-		//model.addElement(p); // Always the first one on the list, 2nd is accepted answer if it exists.
+		post = new Post(d);
 
 		// If Post has an acceptedAnswerId, then get that one first, 10 total
 		// answers ranked by upvotes
-
 		ArrayList<Post> temp = new ArrayList<>();
 		it = MongoDBConnector.collection
-				.find(eq("parentId", p.getId()))
+				.find(eq("parentId", post.getId()))
 				.sort(descending("score"))
 				.limit(10)
 				.iterator();
@@ -301,20 +304,22 @@ public class QuestionWindow extends JFrame {
 			return list1;
 		}
 
+		// If there are answersm, add them to a temporal list.
 		while (it.hasNext()) {
 			Post pTemp = new Post(it.next());
 			temp.add(pTemp);
 		}
 
-		if (p.getAcceptedAnswerId() != 0) { // That is, there is an accepted answer.
+		// We have to make sure that the accepted answer is the first one.
+		if (post.getAcceptedAnswerId() != 0) { // That is, there is an accepted answer.
 			for (Post po : temp) {
-				if (po.getId() == p.getAcceptedAnswerId()) {
+				if (po.getId() == post.getAcceptedAnswerId()) {
 					model.addElement(po);
 					break;
 				}
 			}
 			// Then we delete the element from the list
-			temp.removeIf(po -> po.getId() == p.getAcceptedAnswerId());
+			temp.removeIf(po -> po.getId() == post.getAcceptedAnswerId());
 		}
 
 		// Now we add the rest of the answers
