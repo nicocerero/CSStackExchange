@@ -189,7 +189,8 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				QuestionWindow qw = new QuestionWindow(list.getSelectedValue().getId());
+				int id = list.getSelectedValue().getId();
+				QuestionWindow qw = new QuestionWindow(id);
 				qw.setVisible(true);
 				dispose();
 			}
@@ -233,7 +234,7 @@ public class MainWindow extends JFrame {
 			p.setId((int) d.get("id"));
 			p.setScore((int) d.get("score"));
 
-			System.out.println("Imprimiendo post: " + p.toString());
+			//System.out.println("Imprimiendo post: " + p.toString());
 			model.addElement(p);
 		}
 

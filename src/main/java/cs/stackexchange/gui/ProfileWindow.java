@@ -143,7 +143,7 @@ public class ProfileWindow extends JFrame {
 		read(lblUsername.getText().toString());
 		
 		textArea = new JTextArea();
-		if(un == "") {
+		if(un == "" | un.equals("null")) {
 			textArea.setText("Click on 'Update AboutMe' to update your description");
 			textArea.setEditable(false);
 		}else {
@@ -160,10 +160,10 @@ public class ProfileWindow extends JFrame {
 		lblReputation.setBounds(261, 64, 166, 34);
 		panel_1.add(lblReputation);
 		
-		JLabel lblReputation_1 = new JLabel("Creation Date: " + un3);
-		lblReputation_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblReputation_1.setBounds(67, 108, 459, 34);
-		panel_1.add(lblReputation_1);
+		JLabel lblDate = new JLabel("Creation Date: " + un3);
+		lblDate.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblDate.setBounds(67, 108, 459, 34);
+		panel_1.add(lblDate);
 		
 		btnConfirm = new JButton("Confirm");
 		btnConfirm.setForeground(Color.WHITE);
@@ -231,8 +231,8 @@ public class ProfileWindow extends JFrame {
 					result2= tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.reputation");
 					result3= tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.creationDate");
 					un = result.single().get(0).asString();
-					un2 = result2.single().get(0).toString();
-					un3 = result3.single().get(0).toString();
+					un2 = result2.single().get(0).toString().replaceAll("\"", "");
+					un3 = result3.single().get(0).toString().split("T")[0].replace("\"", "");
 					return un;
 				});
 			}

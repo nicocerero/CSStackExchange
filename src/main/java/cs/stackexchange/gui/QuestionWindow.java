@@ -1,6 +1,7 @@
 package cs.stackexchange.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -185,45 +187,40 @@ public class QuestionWindow extends JFrame {
 		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 20));
 		txtQuestion.setLineWrap(true);
 		txtQuestion.setWrapStyleWord(true);
-		txtQuestion.setText("Q: " + post.getTitle());
 		txtQuestion.setEditable(false);
 		txtQuestion.setBounds(27, 74, 486, 69);
 		panel_1.add(txtQuestion);
+
+		/*
+		 * JButton btnSelect = new JButton("Select");
+		 * btnSelect.setForeground(Color.WHITE); btnSelect.setFont(new Font("Tahoma",
+		 * Font.BOLD, 15)); btnSelect.setBorder(new
+		 * CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new
+		 * Color(0, 0, 0), 2, true))); btnSelect.setBackground(Color.BLACK);
+		 * btnSelect.setBounds(199, 423, 101, 29); btnSelect.addActionListener(new
+		 * ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) { // TODO: create new
+		 * window. Post p = list.getSelectedValue(); getPostById(p.getId()); }
+		 * 
+		 * }); panel_1.add(btnSelect);
+		 */
+
+		// Metodos de BD.
+		JList<Post> list = getPostById(id);
+		list.setBounds(38, 45, 490, 380);
+		txtQuestion.setText("Q: " + post.getTitle());
 
 		JLabel lblScore = new JLabel("Score: " + post.getScore());
 		lblScore.setBounds(27, 153, 64, 13);
 		panel_1.add(lblScore);
 
-		/*
-		 * JButton btnSelect = new JButton("Select");
-		 * btnSelect.setForeground(Color.WHITE);
-		 * btnSelect.setFont(new Font("Tahoma", Font.BOLD, 15));
-		 * btnSelect.setBorder(new
-		 * CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
-		 * new LineBorder(new Color(0, 0, 0), 2, true)));
-		 * btnSelect.setBackground(Color.BLACK);
-		 * btnSelect.setBounds(199, 423, 101, 29);
-		 * btnSelect.addActionListener(new ActionListener() {
-		 * 
-		 * @Override
-		 * public void actionPerformed(ActionEvent e) {
-		 * // TODO: create new window.
-		 * Post p = list.getSelectedValue();
-		 * getPostById(p.getId());
-		 * }
-		 * 
-		 * });
-		 * panel_1.add(btnSelect);
-		 */
-
-		// Metodos de BD.
-		JList<Post> list = getPostById(id);
-
-		list.setBounds(38, 45, 490, 380);
-
 		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(0, 176, 536, 276);
+		scroll.setBounds(10, 176, 526, 276);
 		panel_1.add(scroll);
+
+		MyCellRenderer cellRenderer = new MyCellRenderer(380);
+		list.setCellRenderer(cellRenderer);
 
 	}
 
@@ -242,47 +239,16 @@ public class QuestionWindow extends JFrame {
 		}
 	}
 
-	/*
-	 * public JList<Post> getTopPosts() {
-	 * JList<Post> list1 = new JList<Post>(model);
-	 * MongoDBConnector.connect();
-	 * 
-	 * Bson projection = fields(include("title", "score", "id"), excludeId());
-	 * Iterator<Document> it = MongoDBConnector.collection
-	 * .find(eq("postTypeId", 1))
-	 * .projection(projection)
-	 * .sort(descending("score"))
-	 * .limit(10)
-	 * .iterator();
-	 * 
-	 * while (it.hasNext()) {
-	 * Document d = it.next();
-	 * Post p = new Post();
-	 * p.setTitle((String) d.get("title"));
-	 * p.setId((int) d.get("id"));
-	 * p.setScore((int) d.get("score"));
-	 * 
-	 * System.out.println("Imprimiendo post: " + p.toString());
-	 * model.addElement(p);
-	 * }
-	 * 
-	 * return list1;
-	 * }
-	 */
-
 	/**
-	 * Post -> title, body, tags, votes, comments, ...
-	 * Answers -> title, body, votes, comment, ordered by votes (first always
-	 * correct answer).
+	 * Post -> title, body, tags, votes, comments, ... Answers -> title, body,
+	 * votes, comment, ordered by votes (first always correct answer).
 	 */
 	public JList<Post> getPostById(int id) {
 		JList<Post> list1 = new JList<Post>(model);
 		MongoDBConnector.connect();
 
 		// First get the question Post
-		Iterator<Document> it = MongoDBConnector.collection
-				.find(eq("id", id))
-				.iterator();
+		Iterator<Document> it = MongoDBConnector.collection.find(eq("id", id)).iterator();
 
 		if (!it.hasNext()) {
 			logger.log(Level.SEVERE, "Post by ID not found.");
@@ -294,10 +260,7 @@ public class QuestionWindow extends JFrame {
 		// If Post has an acceptedAnswerId, then get that one first, 10 total
 		// answers ranked by upvotes
 		ArrayList<Post> temp = new ArrayList<>();
-		it = MongoDBConnector.collection
-				.find(eq("parentId", post.getId()))
-				.sort(descending("score"))
-				.limit(10)
+		it = MongoDBConnector.collection.find(eq("parentId", post.getId())).sort(descending("score")).limit(10)
 				.iterator();
 
 		if (!it.hasNext()) {
@@ -328,5 +291,31 @@ public class QuestionWindow extends JFrame {
 		}
 
 		return list1;
+	}
+
+	class MyCellRenderer extends DefaultListCellRenderer {
+
+		private static final long serialVersionUID = 1L;
+		public static final String HTML_1 = "<html><body style='width: ";
+		public static final String HTML_2 = "px'>";
+		public static final String HTML_3 = "</html>";
+		private int width;
+
+		public MyCellRenderer(int width) {
+			this.width = width;
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+			Post label = (Post) value;
+			String body = label.getBody();
+			int score = label.getScore();
+			String date = label.getCreationDate().toString().split("T")[0];
+			String text = HTML_1 + String.valueOf(width) + HTML_2 + "Score: " + score + "<br/>Cretation date: " + date
+					+ "<br/><br/>" + body + "<br/><br/><br/>" + HTML_3;
+			return super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
+		}
+
 	}
 }

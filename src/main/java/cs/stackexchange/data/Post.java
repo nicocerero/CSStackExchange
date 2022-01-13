@@ -1,9 +1,6 @@
 package cs.stackexchange.data;
 
 import java.util.ArrayList;
-import java.util.Date;
-
-import java.util.Iterator;
 import org.bson.Document;
 
 public class Post {
@@ -11,7 +8,7 @@ public class Post {
 	private int id;
 	private int postTypeId;
 	private int acceptedAnswerId;
-	private Date creationDate;
+	private String creationDate;
 	private int score;
 	private int viewCount;
 	private String title;
@@ -21,7 +18,7 @@ public class Post {
 	private ArrayList<Comment> comments;
 	private int parentId;
 
-	public Post(int id, int postTypeId, int acceptedAnswerId, Date creationDate, int score, int viewCount, String title,
+	public Post(int id, int postTypeId, int acceptedAnswerId, String creationDate, int score, int viewCount, String title,
 			String body, int ownerUserId, ArrayList<Tag> tags, ArrayList<Comment> comments, int parentId) {
 		super();
 		this.id = id;
@@ -45,34 +42,50 @@ public class Post {
 	public Post(Document d) {
 		super();
 		this.id = (int) d.get("id");
-		this.postTypeId = (int) d.get("type");
-		this.acceptedAnswerId = (int) d.get("acceptedAnswerId");
-		this.creationDate = (Date) d.get("creationDate");
+		this.postTypeId = (int) d.get("postTypeId");
+		if(d.get("acceptedAnswerId") == null) {
+			this.acceptedAnswerId = 0;
+		}else {
+			this.acceptedAnswerId = (int) d.get("acceptedAnswerId");
+		}
+		this.creationDate = (String) d.get("creationDate");
 		this.score = (int) d.get("score");
-		this.viewCount = (int) d.get("viewCount");
-		this.title = (String) d.get("title");
+		if(d.get("viewCount") == null) {
+			this.viewCount = 0;
+		}else {
+			this.viewCount = (int) d.get("viewCount");
+		}
+		if(d.get("title") == null) {
+			this.title = "";
+		}else {
+			this.title = (String) d.get("title");
+		}
 		this.body = (String) d.get("body");
 		this.ownerUserId = (int) d.get("ownerUserId");
-		this.parentId = (int) d.get("parentId");
+		if(d.get("parentId") == null) {
+			this.parentId = 0;
+		}else {
+			this.parentId = (int) d.get("parentId");
+		}
 		// Now, handle the iterators for Tags and Comments.
 		this.tags = new ArrayList<>();
-		@SuppressWarnings("unchecked")
-		Iterator<Document> it_tag = (Iterator<Document>) d.get("tags");
-		while (it_tag.hasNext()) {
-			Tag t = new Tag(it_tag.next());
-			if (t != null) {
-				this.tags.add(t);
-			}
-		}
+//		@SuppressWarnings("unchecked")
+//		Iterator<Document> it_tag = (Iterator<Document>) d.get("tags");
+//		while (it_tag.hasNext()) {
+//			Tag t = new Tag(it_tag.next());
+//			if (t != null) {
+//				this.tags.add(t);
+//			}
+//		}
 		this.comments = new ArrayList<>();
-		@SuppressWarnings("unchecked")
-		Iterator<Document> it_com = (Iterator<Document>) d.get("comments");
-		while (it_com.hasNext()) {
-			Comment c = new Comment(it_com.next());
-			if (c != null) {
-				this.comments.add(c);
-			}
-		}
+//		@SuppressWarnings("unchecked")
+//		Iterator<Document> it_com = (Iterator<Document>) d.get("comments");
+//		while (it_com.hasNext()) {
+//			Comment c = new Comment(it_com.next());
+//			if (c != null) {
+//				this.comments.add(c);
+//			}
+//		}
 	}
 
 	public int getId() {
@@ -99,11 +112,11 @@ public class Post {
 		this.acceptedAnswerId = acceptedAnswerId;
 	}
 
-	public Date getCreationDate() {
+	public String getCreationDate() {
 		return creationDate;
 	}
 
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
 
@@ -173,7 +186,12 @@ public class Post {
 
 	@Override
 	public String toString() {
-		return "Post (id:" + id + ") [score=" + score + ", title=" + title + "]";
+		if(postTypeId == 0) {
+			return "Question (id:" + id + ") [score=" + score + ", title=" + title + "]";
+		}else {
+			return "Answer [score=" + score + "]\n body=" + body;
+		}
+		
 	}
 
 }
