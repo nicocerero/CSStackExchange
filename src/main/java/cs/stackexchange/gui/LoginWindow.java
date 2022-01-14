@@ -32,20 +32,19 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+public class LoginWindow extends JFrame {
 
-public class LoginWindow extends JFrame{
-	
 	private JPanel contentPane;
 	private JTextField txtUsername1;
 	private JLabel lblLoginMessage1 = new JLabel("");
-	
+
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	
+
 	static Neo4jConnector neo4j;
-	
+
 	Result result;
 	String un;
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public static void main(String[] args) {
@@ -62,7 +61,7 @@ public class LoginWindow extends JFrame{
 		});
 
 	}
-	
+
 	public LoginWindow() throws IOException {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
@@ -74,12 +73,12 @@ public class LoginWindow extends JFrame{
 		contentPane.setBorder(new LineBorder(new Color(85, 107, 47), 2));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		JLabel ImagePanel = new JLabel();
 		ImagePanel.setIcon(new ImageIcon(getClass().getResource("images/logo.png")));
 		ImagePanel.setBounds(261, 10, 158, 128);
 		contentPane.add(ImagePanel);
-		
+
 		JLabel lblStackExchange = new JLabel("CS StackExchange");
 		lblStackExchange.setFont(new Font("Arial Nova", Font.PLAIN, 33));
 		lblStackExchange.setToolTipText("");
@@ -87,7 +86,8 @@ public class LoginWindow extends JFrame{
 		contentPane.add(lblStackExchange);
 
 		JPanel UserBox = new JPanel();
-		UserBox.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
+		UserBox.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
 		UserBox.setBackground(Color.WHITE);
 		UserBox.setBounds(216, 227, 250, 40);
 		contentPane.add(UserBox);
@@ -116,40 +116,42 @@ public class LoginWindow extends JFrame{
 		txtUsername1.setBounds(10, 10, 170, 20);
 		UserBox.add(txtUsername1);
 		txtUsername1.setColumns(10);
-		
+
 		lblLoginMessage1.setForeground(new Color(128, 0, 0));
 		lblLoginMessage1.setFont(new Font("Arial", Font.PLAIN, 12));
 		lblLoginMessage1.setBounds(216, 198, 250, 19);
 		contentPane.add(lblLoginMessage1);
-		
+
 		JButton loginButton = new JButton("Login");
 		loginButton.setFont(new Font("Tahoma", Font.BOLD, 15));
 		loginButton.setForeground(Color.WHITE);
 		loginButton.setBackground(Color.BLACK);
-		loginButton.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
+		loginButton.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				if(txtUsername1.getText().toString().equals("admin")) {
+
+				if (txtUsername1.getText().toString().equals("admin")) {
 					AdminWindow aw = new AdminWindow();
 					aw.setVisible(true);
 					dispose();
-				}else if(checkUser(txtUsername1.getText()).equals(un)) {
+				} else if (checkUser(txtUsername1.getText()).equals(un)) {
 					setProp(txtUsername1.getText());
 					MainWindow mw = new MainWindow();
 					mw.setVisible(true);
 					dispose();
 				}
 			}
-			
+
 		});
 		loginButton.setBounds(216, 315, 101, 29);
 		contentPane.add(loginButton);
-		
+
 		JButton registerButton = new JButton("Register");
 		registerButton.setFont(new Font("Tahoma", Font.BOLD, 15));
 		registerButton.setForeground(Color.WHITE);
-		registerButton.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new Color(0, 0, 0), 2, true)));
+		registerButton.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
 		registerButton.setBackground(Color.BLACK);
 		registerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -162,12 +164,12 @@ public class LoginWindow extends JFrame{
 				}
 				dispose();
 			}
-			
+
 		});
 		registerButton.setBounds(365, 315, 101, 29);
 		contentPane.add(registerButton);
 	}
-	
+
 	public static void setProp(String username) {
 		File archivo = new File("resources/username");
 		try {
@@ -181,22 +183,22 @@ public class LoginWindow extends JFrame{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String checkUser(String username) {
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
-		
-		try(Session session = driver.session()){
+
+		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
 				result = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.username");
 				un = result.single().get(0).asString();
 				return un;
 			});
 			return un;
-		}catch(Exception e) {
+		} catch (Exception e) {
 			logger.log(Level.INFO, "ERROR", e);
 			lblLoginMessage1.setText("User not found!");
 			return null;
 		}
-		
+
 	}
 }
