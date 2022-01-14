@@ -18,3 +18,4 @@ buildNumber.properties
 .classpath
 .settings/org.eclipse.jdt.core.prefs
 resources/username
+Data/__pycache__/scrape.cpython-38.pyc
