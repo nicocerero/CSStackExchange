@@ -187,9 +187,9 @@ public class Post {
 	@Override
 	public String toString() {
 		if(postTypeId == 0) {
-			return "Question (id:" + id + ") [score=" + score + ", title=" + title + "]";
+			return "(id:" + id + ") | "+ score + " | Q: " + title;
 		}else {
-			return "Answer [score=" + score + "]\n body=" + body;
+			return "Answer [score=" + score + "] body=" + body;
 		}
 		
 	}

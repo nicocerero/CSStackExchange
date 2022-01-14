@@ -101,8 +101,9 @@ public class QuestionWindow extends JFrame {
 		gbc_lblNewLabel_1.gridy = 0;
 		panel.add(lblNewLabel_1, gbc_lblNewLabel_1);
 
-		JButton btnProfile = new JButton("Profile");
+		JButton btnProfile = new JButton("My Profile");
 		GridBagConstraints gbc_btnProfile = new GridBagConstraints();
+		gbc_btnProfile.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnProfile.insets = new Insets(0, 0, 5, 0);
 		gbc_btnProfile.gridx = 1;
 		gbc_btnProfile.gridy = 5;
@@ -110,42 +111,28 @@ public class QuestionWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ProfileWindow pw = new ProfileWindow();
+				MyProfileWindow mpw = new MyProfileWindow();
+				mpw.setVisible(true);
+				dispose();
+
+			}
+		});
+		btnProfile.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MyProfileWindow pw = new MyProfileWindow();
 				pw.setVisible(true);
 				dispose();
 			}
 		});
 
-		JLabel lblMenu = new JLabel("MENU");
-		GridBagConstraints gbc_lblMenu = new GridBagConstraints();
-		gbc_lblMenu.insets = new Insets(0, 0, 5, 0);
-		gbc_lblMenu.gridx = 1;
-		gbc_lblMenu.gridy = 3;
-		panel.add(lblMenu, gbc_lblMenu);
-
-		JButton btnHome = new JButton("Home");
-		GridBagConstraints gbc_btnHome = new GridBagConstraints();
-		gbc_btnHome.insets = new Insets(0, 0, 5, 0);
-		gbc_btnHome.gridx = 1;
-		gbc_btnHome.gridy = 4;
-		btnHome.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				MainWindow mw = new MainWindow();
-				mw.setVisible(true);
-				dispose();
-
-			}
-		});
-		panel.add(btnHome, gbc_btnHome);
-		panel.add(btnProfile, gbc_btnProfile);
-
 		JLabel lblLogout = new JLabel("Logout");
 		lblLogout.setForeground(Color.BLUE);
 		GridBagConstraints gbc_lblLogout = new GridBagConstraints();
+		gbc_lblLogout.insets = new Insets(0, 0, 5, 0);
 		gbc_lblLogout.gridx = 1;
-		gbc_lblLogout.gridy = 14;
+		gbc_lblLogout.gridy = 1;
 		lblLogout.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -171,6 +158,60 @@ public class QuestionWindow extends JFrame {
 			}
 		});
 		panel.add(lblLogout, gbc_lblLogout);
+
+		JLabel lblMenu = new JLabel("MENU");
+		GridBagConstraints gbc_lblMenu = new GridBagConstraints();
+		gbc_lblMenu.insets = new Insets(0, 0, 5, 0);
+		gbc_lblMenu.gridx = 1;
+		gbc_lblMenu.gridy = 3;
+		panel.add(lblMenu, gbc_lblMenu);
+
+		JButton btnHome = new JButton("Home");
+		GridBagConstraints gbc_btnHome = new GridBagConstraints();
+		gbc_btnHome.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnHome.insets = new Insets(0, 0, 5, 0);
+		gbc_btnHome.gridx = 1;
+		gbc_btnHome.gridy = 4;
+		btnHome.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MainWindow mw = new MainWindow();
+				mw.setVisible(true);
+				dispose();
+
+			}
+		});
+		panel.add(btnHome, gbc_btnHome);
+		panel.add(btnProfile, gbc_btnProfile);
+
+		JLabel lblBack = new JLabel("Back");
+		GridBagConstraints gbc_lblBack = new GridBagConstraints();
+		lblBack.setForeground(Color.BLUE);
+		gbc_lblBack.insets = new Insets(0, 0, 5, 0);
+		gbc_lblBack.gridx = 1;
+		gbc_lblBack.gridy = 6;
+		lblBack.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lblBack.setForeground(Color.BLUE);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lblBack.setForeground(Color.RED);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				MainWindow mw = new MainWindow();
+				mw.setVisible(true);
+				dispose();
+
+			}
+		});
+		panel.add(lblBack, gbc_lblBack);
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
@@ -306,7 +347,7 @@ public class QuestionWindow extends JFrame {
 		}
 
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
 			Post label = (Post) value;
 			String body = label.getBody();

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,13 +18,19 @@ import javax.swing.border.LineBorder;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
 
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.*;
+import static cs.stackexchange.bd.Neo4jConnector.driver;
 
 import cs.stackexchange.bd.MongoDBConnector;
+import cs.stackexchange.bd.Neo4jConnector;
 import cs.stackexchange.data.Post;
+import cs.stackexchange.data.User;
 
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
@@ -42,14 +49,22 @@ import javax.swing.JList;
 import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
+import java.awt.Component;
+import javax.swing.ListModel;
 
 public class MainWindow extends JFrame {
 
 	private DefaultListModel<Post> model = new DefaultListModel<Post>();
+	private DefaultListModel<User> model2 = new DefaultListModel<User>();
 
 	private JPanel contentPane;
 
 	private static final long serialVersionUID = 1L;
+
+	static Neo4jConnector neo4j;
+	Result result;
+	List<Record> list;
+	User u;
 
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -99,8 +114,9 @@ public class MainWindow extends JFrame {
 		gbc_lblNewLabel_1.gridy = 0;
 		panel.add(lblNewLabel_1, gbc_lblNewLabel_1);
 
-		JButton btnNewButton = new JButton("Profile");
+		JButton btnNewButton = new JButton("My Profile");
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton.gridx = 1;
 		gbc_btnNewButton.gridy = 5;
@@ -108,32 +124,18 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ProfileWindow pw = new ProfileWindow();
+				MyProfileWindow pw = new MyProfileWindow();
 				pw.setVisible(true);
 				dispose();
 			}
 		});
 
-		JLabel lblNewLabel = new JLabel("MENU");
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel.gridx = 1;
-		gbc_lblNewLabel.gridy = 3;
-		panel.add(lblNewLabel, gbc_lblNewLabel);
-
-		JButton btnNewButton_1 = new JButton("Home");
-		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton_1.gridx = 1;
-		gbc_btnNewButton_1.gridy = 4;
-		panel.add(btnNewButton_1, gbc_btnNewButton_1);
-		panel.add(btnNewButton, gbc_btnNewButton);
-
 		JLabel lblLogout = new JLabel("Logout");
 		lblLogout.setForeground(Color.BLUE);
 		GridBagConstraints gbc_lblLogout = new GridBagConstraints();
+		gbc_lblLogout.insets = new Insets(0, 0, 5, 0);
 		gbc_lblLogout.gridx = 1;
-		gbc_lblLogout.gridy = 14;
+		gbc_lblLogout.gridy = 1;
 		lblLogout.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -160,16 +162,32 @@ public class MainWindow extends JFrame {
 		});
 		panel.add(lblLogout, gbc_lblLogout);
 
+		JLabel lblNewLabel = new JLabel("MENU");
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_lblNewLabel.gridx = 1;
+		gbc_lblNewLabel.gridy = 3;
+		panel.add(lblNewLabel, gbc_lblNewLabel);
+
+		JButton btnNewButton_1 = new JButton("Home");
+		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
+		gbc_btnNewButton_1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
+		gbc_btnNewButton_1.gridx = 1;
+		gbc_btnNewButton_1.gridy = 4;
+		panel.add(btnNewButton_1, gbc_btnNewButton_1);
+		panel.add(btnNewButton, gbc_btnNewButton);
+
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JList<Post> list = getTopPosts();
-		list.setBounds(38, 45, 490, 380);
+		JList<Post> listPosts = getTopPosts();
+		listPosts.setBounds(38, 45, 490, 380);
 
-		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(0, 47, 536, 371);
+		JScrollPane scroll = new JScrollPane(listPosts);
+		scroll.setBounds(10, 74, 526, 204);
 		panel_1.add(scroll);
 
 		JLabel lblStackExchange = new JLabel("CS StackExchange");
@@ -178,25 +196,63 @@ public class MainWindow extends JFrame {
 		lblStackExchange.setBounds(118, 0, 299, 50);
 		panel_1.add(lblStackExchange);
 
-		JButton btnSelect = new JButton("Select");
-		btnSelect.setForeground(Color.WHITE);
-		btnSelect.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btnSelect.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+		JButton btnSelectPost = new JButton("Select");
+		btnSelectPost.setForeground(Color.WHITE);
+		btnSelectPost.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnSelectPost.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
-		btnSelect.setBackground(Color.BLACK);
-		btnSelect.setBounds(199, 423, 101, 29);
-		btnSelect.addActionListener(new ActionListener() {
+		btnSelectPost.setBackground(Color.BLACK);
+		btnSelectPost.setBounds(10, 277, 101, 29);
+		btnSelectPost.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int id = list.getSelectedValue().getId();
+				int id = listPosts.getSelectedValue().getId();
 				QuestionWindow qw = new QuestionWindow(id);
 				qw.setVisible(true);
 				dispose();
 			}
 
 		});
-		panel_1.add(btnSelect);
+		panel_1.add(btnSelectPost);
+
+		JLabel lblTopQuestions = new JLabel("Top 10 questions:");
+		lblTopQuestions.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblTopQuestions.setBounds(10, 50, 130, 24);
+		panel_1.add(lblTopQuestions);
+
+		JLabel lblTopUsers = new JLabel("Top 5 users:");
+		lblTopUsers.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblTopUsers.setBounds(10, 305, 130, 24);
+		panel_1.add(lblTopUsers);
+
+		JList<User> listUsers = getUsers();
+		listUsers.setBounds(0, 0, 524, 202);
+		panel_1.add(listUsers);
+
+		JScrollPane scrollUsers = new JScrollPane(listUsers);
+		scrollUsers.setBounds(10, 328, 526, 96);
+		panel_1.add(scrollUsers);
+
+		JButton btnSelectUser = new JButton("Select");
+		btnSelectUser.setForeground(Color.WHITE);
+		btnSelectUser.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnSelectUser.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
+		btnSelectUser.setBackground(Color.BLACK);
+		btnSelectUser.setBounds(10, 423, 101, 29);
+		btnSelectUser.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int id = listUsers.getSelectedValue().getId();
+				UserProfileWindow upw = new UserProfileWindow(id);
+				upw.setVisible(true);
+				dispose();
+			}
+
+		});
+		panel_1.add(btnSelectUser);
 
 	}
 
@@ -216,16 +272,12 @@ public class MainWindow extends JFrame {
 	}
 
 	public JList<Post> getTopPosts() {
-		JList<Post> list1 = new JList<Post>(model);
+		JList<Post> listPosts = new JList<Post>(model);
 		MongoDBConnector.connect();
 
 		Bson projection = fields(include("title", "score", "id"), excludeId());
-		Iterator<Document> it = MongoDBConnector.collection
-				.find(eq("postTypeId", 1))
-				.projection(projection)
-				.sort(descending("score"))
-				.limit(10)
-				.iterator();
+		Iterator<Document> it = MongoDBConnector.collection.find(eq("postTypeId", 1)).projection(projection)
+				.sort(descending("score")).limit(10).iterator();
 
 		while (it.hasNext()) {
 			Document d = it.next();
@@ -234,26 +286,48 @@ public class MainWindow extends JFrame {
 			p.setId((int) d.get("id"));
 			p.setScore((int) d.get("score"));
 
-			//System.out.println("Imprimiendo post: " + p.toString());
+			// System.out.println("Imprimiendo post: " + p.toString());
 			model.addElement(p);
 		}
 
-		return list1;
+		return listPosts;
+	}
+
+	public JList<User> getUsers() {
+		JList<User> jlist = new JList<User>(model2);
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+
+		try (Session session = driver.session()) {
+			session.readTransaction(tx -> {
+				result = tx.run(
+						"MATCH (n:User) RETURN n.id, n.aboutMe,n.creationDate,n.reputation,n.username ORDER BY n.reputation DESC LIMIT 5");
+				list = result.list();
+				Iterator<Record> iterator = list.iterator();
+				while (iterator.hasNext()) {
+					Record r = iterator.next();
+					u = new User(r);
+					model2.addElement(u);
+				}
+				return list;
+			});
+			return jlist;
+		} catch (Exception e) {
+			logger.log(Level.INFO, "ERROR", e);
+			return null;
+		}
+
 	}
 
 	/**
-	 * Post -> title, body, tags, votes, comments, ...
-	 * Answers -> title, body, votes, comment, ordered by votes (first always
-	 * correct answer).
+	 * Post -> title, body, tags, votes, comments, ... Answers -> title, body,
+	 * votes, comment, ordered by votes (first always correct answer).
 	 */
 	public JList<Post> getPostById(int id) {
 		JList<Post> list1 = new JList<Post>(model);
 		MongoDBConnector.connect();
 
 		// First get the question Post
-		Iterator<Document> it = MongoDBConnector.collection
-				.find(eq("id", id))
-				.iterator();
+		Iterator<Document> it = MongoDBConnector.collection.find(eq("id", id)).iterator();
 
 		if (!it.hasNext()) {
 			logger.log(Level.SEVERE, "Post by ID not found.");
@@ -267,10 +341,7 @@ public class MainWindow extends JFrame {
 		// answers ranked by upvotes
 
 		ArrayList<Post> temp = new ArrayList<>();
-		it = MongoDBConnector.collection
-				.find(eq("parentId", p.getId()))
-				.limit(10)
-				.iterator();
+		it = MongoDBConnector.collection.find(eq("parentId", p.getId())).limit(10).iterator();
 
 		if (!it.hasNext()) {
 			return list1;
@@ -299,5 +370,4 @@ public class MainWindow extends JFrame {
 
 		return list1;
 	}
-
 }
