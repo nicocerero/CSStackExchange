@@ -278,14 +278,23 @@ public class QuestionWindow extends JFrame {
 		});
 		panel_1.add(btnSelect);
 
-		JButton btnAnswer = new JButton("New Answer");
-		btnAnswer.setForeground(Color.WHITE);
-		btnAnswer.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btnAnswer.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+		JButton btnNewAnswer = new JButton("New Answer");
+		btnNewAnswer.setForeground(Color.WHITE);
+		btnNewAnswer.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnNewAnswer.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
-		btnAnswer.setBackground(Color.BLACK);
-		btnAnswer.setBounds(393, 401, 133, 33);
-		panel_1.add(btnAnswer);
+		btnNewAnswer.setBackground(Color.BLACK);
+		btnNewAnswer.setBounds(393, 401, 133, 33);
+		btnNewAnswer.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				NewAnswerWindow naw = new NewAnswerWindow(id);
+				naw.setVisible(true);
+				dispose();
+			}
+		});
+		panel_1.add(btnNewAnswer);
 
 		JButton btnComment = new JButton("Comment");
 		btnComment.setForeground(Color.WHITE);
@@ -334,7 +343,7 @@ public class QuestionWindow extends JFrame {
 		// If Post has an acceptedAnswerId, then get that one first, 10 total
 		// answers ranked by upvotes
 		ArrayList<Post> temp = new ArrayList<>();
-		it = MongoDBConnector.collection.find(eq("parentId", post.getId())).sort(descending("score")).limit(10)
+		it = MongoDBConnector.collection.find(eq("parentId", post.getId())).sort(descending("score"))
 				.iterator();
 
 		if (!it.hasNext()) {

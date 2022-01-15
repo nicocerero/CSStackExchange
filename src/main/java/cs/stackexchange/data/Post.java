@@ -51,7 +51,7 @@ public class Post {
 		} else {
 			this.acceptedAnswerId = (int) d.get("acceptedAnswerId");
 		}
-		this.creationDate = (String) d.get("creationDate");
+		this.creationDate = (String) d.get("creationDate").toString();
 		this.score = (int) d.get("score");
 		if (d.get("viewCount") == null) {
 			this.viewCount = 0;
