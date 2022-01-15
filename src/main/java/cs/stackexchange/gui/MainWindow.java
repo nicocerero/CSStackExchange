@@ -49,8 +49,6 @@ import javax.swing.JList;
 import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
-import java.awt.Component;
-import javax.swing.ListModel;
 
 public class MainWindow extends JFrame {
 
@@ -187,7 +185,7 @@ public class MainWindow extends JFrame {
 		listPosts.setBounds(38, 45, 490, 380);
 
 		JScrollPane scroll = new JScrollPane(listPosts);
-		scroll.setBounds(10, 74, 526, 204);
+		scroll.setBounds(10, 74, 516, 204);
 		panel_1.add(scroll);
 
 		JLabel lblStackExchange = new JLabel("CS StackExchange");
@@ -231,7 +229,7 @@ public class MainWindow extends JFrame {
 		panel_1.add(listUsers);
 
 		JScrollPane scrollUsers = new JScrollPane(listUsers);
-		scrollUsers.setBounds(10, 328, 526, 96);
+		scrollUsers.setBounds(10, 328, 516, 96);
 		panel_1.add(scrollUsers);
 
 		JButton btnSelectUser = new JButton("Select");
