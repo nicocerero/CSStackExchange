@@ -18,10 +18,20 @@ import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
+
+import com.mongodb.MongoException;
+import com.mongodb.client.MongoCollection;
+
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
+
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.*;
 
 import cs.stackexchange.bd.MongoDBConnector;
+import cs.stackexchange.data.Comment;
 import cs.stackexchange.data.Post;
 
 import javax.swing.JLabel;
@@ -358,5 +368,29 @@ public class QuestionWindow extends JFrame {
 			return super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
 		}
 
+	}
+
+	// UPDATE COMMENTS
+	public void addComment(int postId, Comment comment) {
+		MongoDBConnector.connect();
+
+		Document query = new Document().append("id", postId);
+
+		// import com.mongodb.client.model.Updates;
+		// import org.bson.conversions.Bson;
+		Bson updates = Updates.combine(
+				Updates.addToSet("comments", comment));
+
+		UpdateOptions options = new UpdateOptions().upsert(true);
+
+		try {
+
+			UpdateResult result = MongoDBConnector.collection.updateOne(query, updates, options);
+			System.out.println("Modified document count: " + result.getModifiedCount());
+			System.out.println("Upserted id: " + result.getUpsertedId()); // only contains a value when an upsert is
+																			// performed
+		} catch (MongoException me) {
+			System.err.println("Unable to update due to an error: " + me);
+		}
 	}
 }
