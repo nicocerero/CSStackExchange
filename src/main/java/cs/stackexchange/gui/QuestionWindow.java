@@ -242,24 +242,9 @@ public class QuestionWindow extends JFrame {
 		txtQuestion.setBounds(27, 74, 486, 69);
 		panel_1.add(txtQuestion);
 
-		/*
-		 * JButton btnSelect = new JButton("Select");
-		 * btnSelect.setForeground(Color.WHITE); btnSelect.setFont(new Font("Tahoma",
-		 * Font.BOLD, 15)); btnSelect.setBorder(new
-		 * CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(new
-		 * Color(0, 0, 0), 2, true))); btnSelect.setBackground(Color.BLACK);
-		 * btnSelect.setBounds(199, 423, 101, 29); btnSelect.addActionListener(new
-		 * ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent e) { // TODO: create new
-		 * window. Post p = list.getSelectedValue(); getPostById(p.getId()); }
-		 * 
-		 * }); panel_1.add(btnSelect);
-		 */
-
-		// Metodos de BD.
 		JList<Post> list = getPostById(id);
 		list.setBounds(38, 45, 490, 380);
+		list.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 10));
 		txtQuestion.setText("Q: " + post.getTitle());
 
 		JLabel lblScore = new JLabel("Score: " + post.getScore());
@@ -267,11 +252,49 @@ public class QuestionWindow extends JFrame {
 		panel_1.add(lblScore);
 
 		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(10, 176, 526, 276);
+		scroll.setBounds(10, 176, 516, 215);
 		panel_1.add(scroll);
 
 		MyCellRenderer cellRenderer = new MyCellRenderer(380);
 		list.setCellRenderer(cellRenderer);
+
+		JButton btnSelect = new JButton("Select");
+		btnSelect.setForeground(Color.WHITE);
+		btnSelect.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnSelect.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
+		btnSelect.setBackground(Color.BLACK);
+		btnSelect.setBounds(10, 401, 133, 33);
+		btnSelect.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int id = list.getSelectedValue().getId();
+				AnswerWindow aw = new AnswerWindow(id);
+				aw.setVisible(true);
+				dispose();
+				
+			}
+		});
+		panel_1.add(btnSelect);
+
+		JButton btnAnswer = new JButton("New Answer");
+		btnAnswer.setForeground(Color.WHITE);
+		btnAnswer.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnAnswer.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
+		btnAnswer.setBackground(Color.BLACK);
+		btnAnswer.setBounds(393, 401, 133, 33);
+		panel_1.add(btnAnswer);
+
+		JButton btnComment = new JButton("Comment");
+		btnComment.setForeground(Color.WHITE);
+		btnComment.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnComment.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
+		btnComment.setBackground(Color.BLACK);
+		btnComment.setBounds(353, 143, 106, 25);
+		panel_1.add(btnComment);
 
 	}
 
