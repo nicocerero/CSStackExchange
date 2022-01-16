@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +20,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.MongoException;
-import com.mongodb.client.MongoCollection;
 
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
@@ -44,8 +42,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.JList;
 import java.awt.Font;
@@ -70,7 +66,7 @@ public class QuestionWindow extends JFrame {
 			public void run() {
 				try {
 
-					QuestionWindow frame = new QuestionWindow(post.getId());
+					QuestionWindow frame = new QuestionWindow(post.getId(),"prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -79,7 +75,7 @@ public class QuestionWindow extends JFrame {
 		});
 	}
 
-	public QuestionWindow(int id) {
+	public QuestionWindow(int id, String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -104,7 +100,7 @@ public class QuestionWindow extends JFrame {
 				Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel lblNewLabel_1 = new JLabel("User: " + getProp().toString());
+		JLabel lblNewLabel_1 = new JLabel("User: " + username);
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_1.gridx = 1;
@@ -121,7 +117,7 @@ public class QuestionWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow mpw = new MyProfileWindow();
+				MyProfileWindow mpw = new MyProfileWindow(username);
 				mpw.setVisible(true);
 				dispose();
 
@@ -131,7 +127,7 @@ public class QuestionWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow pw = new MyProfileWindow();
+				MyProfileWindow pw = new MyProfileWindow(username);
 				pw.setVisible(true);
 				dispose();
 			}
@@ -186,7 +182,7 @@ public class QuestionWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -215,7 +211,7 @@ public class QuestionWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -270,7 +266,7 @@ public class QuestionWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int id = list.getSelectedValue().getId();
-				AnswerWindow aw = new AnswerWindow(id);
+				AnswerWindow aw = new AnswerWindow(id,username);
 				aw.setVisible(true);
 				dispose();
 				
@@ -289,7 +285,7 @@ public class QuestionWindow extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				NewAnswerWindow naw = new NewAnswerWindow(id);
+				NewAnswerWindow naw = new NewAnswerWindow(id,username);
 				naw.setVisible(true);
 				dispose();
 			}
@@ -307,7 +303,7 @@ public class QuestionWindow extends JFrame {
 
 	}
 
-	public static String getProp() {
+	/*public static String getProp() {
 		File archivo = new File("resources/username");
 		try {
 			FileInputStream fis = new FileInputStream(archivo);
@@ -320,7 +316,7 @@ public class QuestionWindow extends JFrame {
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}*/
 
 	/**
 	 * Post -> title, body, tags, votes, comments, ... Answers -> title, body,

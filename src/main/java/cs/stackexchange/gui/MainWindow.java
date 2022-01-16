@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,8 +41,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.JList;
 import java.awt.Font;
@@ -70,7 +67,7 @@ public class MainWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow frame = new MainWindow();
+					MainWindow frame = new MainWindow("prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -79,7 +76,7 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	public MainWindow() {
+	public MainWindow(String username) {
 
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
@@ -105,7 +102,7 @@ public class MainWindow extends JFrame {
 				Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel lblNewLabel_1 = new JLabel("User: " + getProp().toString());
+		JLabel lblNewLabel_1 = new JLabel("User: " + username);
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_1.gridx = 1;
@@ -122,7 +119,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow pw = new MyProfileWindow();
+				MyProfileWindow pw = new MyProfileWindow(username);
 				pw.setVisible(true);
 				dispose();
 			}
@@ -206,7 +203,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int id = listPosts.getSelectedValue().getId();
-				QuestionWindow qw = new QuestionWindow(id);
+				QuestionWindow qw = new QuestionWindow(id,username);
 				qw.setVisible(true);
 				dispose();
 			}
@@ -244,7 +241,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int id = listUsers.getSelectedValue().getId();
-				UserProfileWindow upw = new UserProfileWindow(id);
+				UserProfileWindow upw = new UserProfileWindow(id,username);
 				upw.setVisible(true);
 				dispose();
 			}
@@ -254,7 +251,7 @@ public class MainWindow extends JFrame {
 
 	}
 
-	public static String getProp() {
+	/*public static String getProp() {
 		File archivo = new File("resources/username");
 		try {
 			FileInputStream fis = new FileInputStream(archivo);
@@ -267,7 +264,7 @@ public class MainWindow extends JFrame {
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}*/
 
 	public JList<Post> getTopPosts() {
 		JList<Post> listPosts = new JList<Post>(model);

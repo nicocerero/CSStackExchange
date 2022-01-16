@@ -61,7 +61,7 @@ public class AnswerWindow extends JFrame {
 			public void run() {
 				try {
 
-					AnswerWindow frame = new AnswerWindow(post.getId());
+					AnswerWindow frame = new AnswerWindow(post.getId(),"prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -70,7 +70,7 @@ public class AnswerWindow extends JFrame {
 		});
 	}
 
-	public AnswerWindow(int id) {
+	public AnswerWindow(int id,String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -112,7 +112,7 @@ public class AnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow mpw = new MyProfileWindow();
+				MyProfileWindow mpw = new MyProfileWindow(username);
 				mpw.setVisible(true);
 				dispose();
 
@@ -122,7 +122,7 @@ public class AnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow pw = new MyProfileWindow();
+				MyProfileWindow pw = new MyProfileWindow(username);
 				pw.setVisible(true);
 				dispose();
 			}
@@ -177,7 +177,7 @@ public class AnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -206,7 +206,7 @@ public class AnswerWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 

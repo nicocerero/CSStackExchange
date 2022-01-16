@@ -5,10 +5,7 @@ import static cs.stackexchange.bd.Neo4jConnector.driver;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,7 +62,7 @@ public class UserProfileWindow extends JFrame {
 			public void run() {
 				try {
 
-					UserProfileWindow frame = new UserProfileWindow(user.getId());
+					UserProfileWindow frame = new UserProfileWindow(user.getId(),"prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -74,7 +71,7 @@ public class UserProfileWindow extends JFrame {
 		});
 	}
 
-	public UserProfileWindow(int id) {
+	public UserProfileWindow(int id,String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -118,7 +115,7 @@ public class UserProfileWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -138,7 +135,7 @@ public class UserProfileWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -191,7 +188,7 @@ public class UserProfileWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow mpw = new MyProfileWindow();
+				MyProfileWindow mpw = new MyProfileWindow(username);
 				mpw.setVisible(true);
 				dispose();
 
@@ -238,7 +235,7 @@ public class UserProfileWindow extends JFrame {
 
 	}
 
-	public static String getProp() {
+	/*public static String getProp() {
 		File archivo = new File("resources/username");
 		try {
 			FileInputStream fis = new FileInputStream(archivo);
@@ -251,7 +248,7 @@ public class UserProfileWindow extends JFrame {
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}*/
 
 	public String read(int id) {
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");

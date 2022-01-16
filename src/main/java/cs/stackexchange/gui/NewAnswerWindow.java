@@ -7,9 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,8 +37,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -67,7 +63,7 @@ public class NewAnswerWindow extends JFrame {
 			public void run() {
 				try {
 
-					NewAnswerWindow frame = new NewAnswerWindow(3);
+					NewAnswerWindow frame = new NewAnswerWindow(3,"prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -76,7 +72,7 @@ public class NewAnswerWindow extends JFrame {
 		});
 	}
 
-	public NewAnswerWindow(int id) {
+	public NewAnswerWindow(int id,String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,7 +97,7 @@ public class NewAnswerWindow extends JFrame {
 				Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel lblNewLabel_1 = new JLabel("User: " + getUser().toString());
+		JLabel lblNewLabel_1 = new JLabel("User: " + username);
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_1.gridx = 1;
@@ -118,7 +114,7 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow mpw = new MyProfileWindow();
+				MyProfileWindow mpw = new MyProfileWindow(username);
 				mpw.setVisible(true);
 				dispose();
 
@@ -128,7 +124,7 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow pw = new MyProfileWindow();
+				MyProfileWindow pw = new MyProfileWindow(username);
 				pw.setVisible(true);
 				dispose();
 			}
@@ -183,7 +179,7 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -212,7 +208,7 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -259,8 +255,8 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				createAnswer(txtAnswer.getText().toString(), id);
-				QuestionWindow qw = new QuestionWindow(id);
+				createAnswer(txtAnswer.getText().toString(), id, username);
+				QuestionWindow qw = new QuestionWindow(id,username);
 				qw.setVisible(true);
 				dispose();
 			}
@@ -287,7 +283,7 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				QuestionWindow qw = new QuestionWindow(id);
+				QuestionWindow qw = new QuestionWindow(id,username);
 				qw.setVisible(true);
 				dispose();
 			}
@@ -295,7 +291,7 @@ public class NewAnswerWindow extends JFrame {
 		panel_1.add(btnCancel);
 	}
 
-	public static String getUser() {
+	/*public static String getUser() {
 		File archivo = new File("resources/username");
 		try {
 			FileInputStream fis = new FileInputStream(archivo);
@@ -308,9 +304,9 @@ public class NewAnswerWindow extends JFrame {
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}*/
 
-	public void createAnswer(String text, int id) {
+	public void createAnswer(String text, int id,String username) {
 		MongoDBConnector.connect();
 
 		Document d = new Document();
@@ -321,7 +317,7 @@ public class NewAnswerWindow extends JFrame {
 		d.append("score", 0);
 		d.append("viewCount", null);
 		d.append("body", text);
-		d.append("ownerUserId", checkUser(getUser().toString()));
+		d.append("ownerUserId", checkUser(username));
 		d.append("title", null);
 		d.append("tags", new ArrayList<Object>());
 		d.append("parentId", id);
