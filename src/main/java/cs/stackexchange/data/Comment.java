@@ -4,14 +4,12 @@ import org.bson.Document;
 
 public class Comment {
 
-	private int id;
 	private int postId;
 	private String text;
 	private int userId;
 
-	public Comment(int id, int postId, String text, int userId) {
+	public Comment(int postId, String text, int userId) {
 		super();
-		this.id = id;
 		this.postId = postId;
 		this.text = text;
 		this.userId = userId;
@@ -22,19 +20,10 @@ public class Comment {
 
 	public Comment(Document d) {
 		super();
-		this.id = (int) d.get("id");
 		this.postId = (int) d.get("postId");
 		this.text = (String) d.get("text");
 		this.userId = (int) d.get("userId");
 
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public int getPostId() {

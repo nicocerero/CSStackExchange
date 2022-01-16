@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,9 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
+import org.bson.BSONObject;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 
@@ -70,8 +74,9 @@ public class QuestionWindow extends JFrame {
 			public void run() {
 				try {
 
-					QuestionWindow frame = new QuestionWindow(post.getId());
+					QuestionWindow frame = new QuestionWindow(5);
 					frame.setVisible(true);
+
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
 				}
@@ -266,14 +271,14 @@ public class QuestionWindow extends JFrame {
 		btnSelect.setBackground(Color.BLACK);
 		btnSelect.setBounds(10, 401, 133, 33);
 		btnSelect.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int id = list.getSelectedValue().getId();
-				AnswerWindow aw = new AnswerWindow(id);
-				aw.setVisible(true);
+				// AnswerWindow aw = new AnswerWindow(id);
+				// aw.setVisible(true);
 				dispose();
-				
+
 			}
 		});
 		panel_1.add(btnSelect);
@@ -295,6 +300,10 @@ public class QuestionWindow extends JFrame {
 		btnComment.setBackground(Color.BLACK);
 		btnComment.setBounds(353, 143, 106, 25);
 		panel_1.add(btnComment);
+
+		// PRUEBA
+		// Comment c = new Comment(id, "Comentario de prueba by Iñigo", 34);
+		// this.addComment(id, c);
 
 	}
 
@@ -401,8 +410,13 @@ public class QuestionWindow extends JFrame {
 
 		// import com.mongodb.client.model.Updates;
 		// import org.bson.conversions.Bson;
+		Map<String, Object> documentMap = new HashMap<String, Object>();
+
+		documentMap.put("postId", comment.getPostId());
+		documentMap.put("text", comment.getText());
+		documentMap.put("userId", comment.getUserId());
 		Bson updates = Updates.combine(
-				Updates.addToSet("comments", comment));
+				Updates.addToSet("comments", new BasicDBObject(documentMap)));
 
 		UpdateOptions options = new UpdateOptions().upsert(true);
 
