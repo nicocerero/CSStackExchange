@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,8 +33,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.JList;
 import java.awt.Font;
@@ -95,7 +92,7 @@ public class AnswerWindow extends JFrame {
 				Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel lblNewLabel_1 = new JLabel("User: " + getProp().toString());
+		JLabel lblNewLabel_1 = new JLabel("User: " + username);
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_1.gridx = 1;
@@ -274,21 +271,6 @@ public class AnswerWindow extends JFrame {
 		lblComments.setBounds(13, 278, 130, 24);
 		panel_1.add(lblComments);
 
-	}
-
-	public static String getProp() {
-		File archivo = new File("resources/username");
-		try {
-			FileInputStream fis = new FileInputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.load(fis);
-			String nombre = propConfig.getProperty("user");
-			return nombre;
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	/**

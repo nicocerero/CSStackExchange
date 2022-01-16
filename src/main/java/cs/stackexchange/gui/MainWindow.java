@@ -223,7 +223,6 @@ public class MainWindow extends JFrame {
 
 		JList<User> listUsers = getUsers();
 		listUsers.setBounds(0, 0, 524, 202);
-		panel_1.add(listUsers);
 
 		JScrollPane scrollUsers = new JScrollPane(listUsers);
 		scrollUsers.setBounds(10, 328, 516, 96);

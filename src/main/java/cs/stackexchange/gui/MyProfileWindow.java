@@ -5,7 +5,6 @@ import static cs.stackexchange.bd.Neo4jConnector.driver;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,18 +46,13 @@ public class MyProfileWindow extends JFrame {
 	static Neo4jConnector neo4j;
 	static Neo4jConnector neo4j_2;
 
-	Result result;
-	Result result2;
-	Result result3;
-	Result update;
 	String un;
 	String un2;
 	String un3;
-	public String un4;
 
 	private JTextArea textArea;
 	JButton btnUpdate;
-	JButton btnConfirm;
+	JButton btnSave;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -93,9 +87,10 @@ public class MyProfileWindow extends JFrame {
 		contentPane.add(panel, BorderLayout.WEST);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 35, 55, 40 };
-		gbl_panel.rowHeights = new int[] { 35, 0, 0, 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 0 };
 		gbl_panel.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0 };
 		panel.setLayout(gbl_panel);
 
 		JLabel lblBack = new JLabel("Back");
@@ -130,7 +125,7 @@ public class MyProfileWindow extends JFrame {
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel.gridx = 1;
-		gbc_lblNewLabel.gridy = 2;
+		gbc_lblNewLabel.gridy = 1;
 		panel.add(lblNewLabel, gbc_lblNewLabel);
 
 		JButton btnHome = new JButton("Home");
@@ -138,7 +133,7 @@ public class MyProfileWindow extends JFrame {
 		gbc_btnHome.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnHome.insets = new Insets(0, 0, 5, 0);
 		gbc_btnHome.gridx = 1;
-		gbc_btnHome.gridy = 3;
+		gbc_btnHome.gridy = 2;
 		btnHome.addActionListener(new ActionListener() {
 
 			@Override
@@ -151,43 +146,20 @@ public class MyProfileWindow extends JFrame {
 		});
 		panel.add(btnHome, gbc_btnHome);
 
-		JLabel lblLogout = new JLabel("Logout");
-		lblLogout.setForeground(Color.BLUE);
-		GridBagConstraints gbc_lblLogout = new GridBagConstraints();
-		gbc_lblLogout.gridx = 1;
-		gbc_lblLogout.gridy = 13;
-		lblLogout.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				lblLogout.setForeground(Color.BLUE);
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				lblLogout.setForeground(Color.RED);
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				try {
-					LoginWindow lw = new LoginWindow();
-					lw.setVisible(true);
-					dispose();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-
-			}
-		});
-
 		JButton btnNewButton = new JButton("My Profile");
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton.gridx = 1;
-		gbc_btnNewButton.gridy = 4;
+		gbc_btnNewButton.gridy = 3;
 		panel.add(btnNewButton, gbc_btnNewButton);
+
+		JLabel lblLogout = new JLabel("Logout");
+		lblLogout.setForeground(Color.BLUE);
+		GridBagConstraints gbc_lblLogout = new GridBagConstraints();
+		gbc_lblLogout.insets = new Insets(0, 0, 5, 0);
+		gbc_lblLogout.gridx = 1;
+		gbc_lblLogout.gridy = 4;
 		panel.add(lblLogout, gbc_lblLogout);
 
 		JPanel panel_1 = new JPanel();
@@ -197,7 +169,7 @@ public class MyProfileWindow extends JFrame {
 
 		JLabel lblUsername = new JLabel(username);
 		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblUsername.setBounds(67, 64, 166, 34);
+		lblUsername.setBounds(67, 39, 166, 34);
 		panel_1.add(lblUsername);
 
 		read(lblUsername.getText().toString());
@@ -212,39 +184,39 @@ public class MyProfileWindow extends JFrame {
 		}
 		textArea.setBackground(Color.LIGHT_GRAY);
 		textArea.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		textArea.setBounds(67, 153, 437, 181);
+		textArea.setBounds(45, 127, 481, 181);
 		panel_1.add(textArea);
 
 		JLabel lblReputation = new JLabel("Reputation: " + un2);
 		lblReputation.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblReputation.setBounds(261, 64, 166, 34);
+		lblReputation.setBounds(260, 39, 166, 34);
 		panel_1.add(lblReputation);
 
 		JLabel lblDate = new JLabel("Creation Date: " + un3);
 		lblDate.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblDate.setBounds(67, 108, 459, 34);
+		lblDate.setBounds(67, 83, 459, 34);
 		panel_1.add(lblDate);
 
-		btnConfirm = new JButton("Confirm");
-		btnConfirm.setForeground(Color.WHITE);
-		btnConfirm.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btnConfirm.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+		btnSave = new JButton("Save");
+		btnSave.setForeground(Color.WHITE);
+		btnSave.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnSave.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
-		btnConfirm.setBackground(Color.BLACK);
-		btnConfirm.setBounds(371, 344, 133, 33);
-		btnConfirm.setVisible(false);
-		btnConfirm.addActionListener(new ActionListener() {
+		btnSave.setBackground(Color.BLACK);
+		btnSave.setBounds(393, 318, 133, 33);
+		btnSave.setVisible(false);
+		btnSave.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				update(lblUsername.getText().toString());
-				btnConfirm.setVisible(false);
+				btnSave.setVisible(false);
 				textArea.setEditable(false);
 				btnUpdate.setVisible(true);
 			}
 
 		});
-		panel_1.add(btnConfirm);
+		panel_1.add(btnSave);
 
 		btnUpdate = new JButton("Update AboutMe");
 		btnUpdate.setForeground(Color.WHITE);
@@ -252,7 +224,7 @@ public class MyProfileWindow extends JFrame {
 		btnUpdate.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnUpdate.setBackground(Color.BLACK);
-		btnUpdate.setBounds(371, 344, 133, 33);
+		btnUpdate.setBounds(393, 318, 133, 33);
 		btnUpdate.addActionListener(new ActionListener() {
 
 			@Override
@@ -260,11 +232,53 @@ public class MyProfileWindow extends JFrame {
 				textArea.setText("Tell us something about you...");
 				textArea.setEditable(true);
 				btnUpdate.setVisible(false);
-				btnConfirm.setVisible(true);
+				btnSave.setVisible(true);
 			}
 
 		});
 		panel_1.add(btnUpdate);
+
+		JButton btnMyPosts = new JButton("My posts");
+		btnMyPosts.setForeground(Color.WHITE);
+		btnMyPosts.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnMyPosts.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
+		btnMyPosts.setBackground(Color.BLACK);
+		btnMyPosts.setBounds(45, 341, 126, 34);
+		btnMyPosts.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MyPostsWindow mpw = new MyPostsWindow(username);
+				mpw.setVisible(true);
+				dispose();
+				
+			}
+		});
+		panel_1.add(btnMyPosts);
+
+		JButton btnMyComments = new JButton("My comments");
+		btnMyComments.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnMyComments.setForeground(Color.WHITE);
+		btnMyComments.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnMyComments.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+
+				new LineBorder(new Color(0, 0, 0), 2, true)));
+		btnMyComments.setBackground(Color.BLACK);
+		btnMyComments.setBounds(45, 384, 126, 34);
+		panel_1.add(btnMyComments);
+
+		JButton btnDeleteAccout = new JButton("Delete Accout");
+		btnDeleteAccout.setForeground(Color.WHITE);
+		btnDeleteAccout.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnDeleteAccout.setBorder(
+				new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(Color.RED, 2, true)));
+		btnDeleteAccout.setBackground(Color.RED);
+		btnDeleteAccout.setBounds(400, 385, 126, 33);
+		panel_1.add(btnDeleteAccout);
 
 	}
 
@@ -273,9 +287,9 @@ public class MyProfileWindow extends JFrame {
 
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
-				result = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.aboutMe");
-				result2 = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.reputation");
-				result3 = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.creationDate");
+				Result result = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.aboutMe");
+				Result result2 = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.reputation");
+				Result result3 = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.creationDate");
 				un = result.single().get(0).asString();
 				un2 = result2.single().get(0).toString().replaceAll("\"", "");
 				un3 = result3.single().get(0).toString().split("T")[0].replace("\"", "");
@@ -290,7 +304,7 @@ public class MyProfileWindow extends JFrame {
 
 		try (Session session = driver.session()) {
 			session.writeTransaction(tx -> {
-				update = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' " + "SET u.aboutMe = '"
+				Result update = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' " + "SET u.aboutMe = '"
 						+ textArea.getText() + "' RETURN u.aboutMe");
 				un = update.single().get(0).asString();
 				return un;
