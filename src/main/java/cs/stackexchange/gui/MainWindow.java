@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,15 +41,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.JList;
 import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
-import java.awt.Component;
-import javax.swing.ListModel;
 
 public class MainWindow extends JFrame {
 
@@ -72,7 +67,7 @@ public class MainWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow frame = new MainWindow();
+					MainWindow frame = new MainWindow("prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -81,7 +76,7 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	public MainWindow() {
+	public MainWindow(String username) {
 
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
@@ -107,7 +102,7 @@ public class MainWindow extends JFrame {
 				Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel lblNewLabel_1 = new JLabel("User: " + getProp().toString());
+		JLabel lblNewLabel_1 = new JLabel("User: " + username);
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_1.gridx = 1;
@@ -124,7 +119,7 @@ public class MainWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MyProfileWindow pw = new MyProfileWindow();
+				MyProfileWindow pw = new MyProfileWindow(username);
 				pw.setVisible(true);
 				dispose();
 			}
@@ -187,7 +182,7 @@ public class MainWindow extends JFrame {
 		listPosts.setBounds(38, 45, 490, 380);
 
 		JScrollPane scroll = new JScrollPane(listPosts);
-		scroll.setBounds(10, 74, 526, 204);
+		scroll.setBounds(10, 74, 516, 204);
 		panel_1.add(scroll);
 
 		JLabel lblStackExchange = new JLabel("CS StackExchange");
@@ -208,7 +203,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int id = listPosts.getSelectedValue().getId();
-				QuestionWindow qw = new QuestionWindow(id);
+				QuestionWindow qw = new QuestionWindow(id,username);
 				qw.setVisible(true);
 				dispose();
 			}
@@ -231,7 +226,7 @@ public class MainWindow extends JFrame {
 		panel_1.add(listUsers);
 
 		JScrollPane scrollUsers = new JScrollPane(listUsers);
-		scrollUsers.setBounds(10, 328, 526, 96);
+		scrollUsers.setBounds(10, 328, 516, 96);
 		panel_1.add(scrollUsers);
 
 		JButton btnSelectUser = new JButton("Select");
@@ -246,7 +241,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int id = listUsers.getSelectedValue().getId();
-				UserProfileWindow upw = new UserProfileWindow(id);
+				UserProfileWindow upw = new UserProfileWindow(id,username);
 				upw.setVisible(true);
 				dispose();
 			}
@@ -254,21 +249,6 @@ public class MainWindow extends JFrame {
 		});
 		panel_1.add(btnSelectUser);
 
-	}
-
-	public static String getProp() {
-		File archivo = new File("resources/username");
-		try {
-			FileInputStream fis = new FileInputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.load(fis);
-			String nombre = propConfig.getProperty("user");
-			return nombre;
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	public JList<Post> getTopPosts() {
@@ -285,8 +265,6 @@ public class MainWindow extends JFrame {
 			p.setTitle((String) d.get("title"));
 			p.setId((int) d.get("id"));
 			p.setScore((int) d.get("score"));
-
-			// System.out.println("Imprimiendo post: " + p.toString());
 			model.addElement(p);
 		}
 

@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
+
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -26,7 +28,6 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 
 import cs.stackexchange.bd.MongoDBConnector;
-import cs.stackexchange.data.Post;
 
 import javax.swing.JButton;
 import javax.swing.border.CompoundBorder;
@@ -50,9 +51,7 @@ public class AdminPostWindow extends JFrame{
 	
 	JList<String> list1;
 	JLabel lblMessage;
-	
 	Document doc;
-	
 	String fin;
 
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -83,7 +82,7 @@ public class AdminPostWindow extends JFrame{
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		list1 = getMongo();
+		list1 = getPosts();
 		list1.setBounds(67, 40, 536, 371);
 		
 		JScrollPane scroll = new JScrollPane(list1);
@@ -100,10 +99,12 @@ public class AdminPostWindow extends JFrame{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(list1.getSelectedValue().equals(null)) {
+				if(list1.getSelectedValue() == null) {
 					lblMessage.setText("Post not selected");
 				}else {
 					delete();
+					model.remove(list1.getSelectedIndex());
+					JOptionPane.showMessageDialog(null,"Post deleted succesfully");
 					lblMessage.setText("");
 				}
 				
@@ -152,7 +153,7 @@ public class AdminPostWindow extends JFrame{
 		contentPane.add(lblBack);
 	}
 	
-	public JList<String> getMongo() {
+	public JList<String> getPosts() {
 		JList<String> list1 = new JList<String>(model);
 		MongoDBConnector.connect();
 
@@ -173,8 +174,5 @@ public class AdminPostWindow extends JFrame{
 		System.out.println(list1.getSelectedValue().toString().substring(3, last));
 		MongoDBConnector.collection.deleteOne(Filters.eq("id", Integer.parseInt(list1.getSelectedValue().toString().substring(3, last))));
 		MongoDBConnector.disconnect();
-		AdminPostWindow adw = new AdminPostWindow();
-		adw.setVisible(true);
-		dispose();
 	}
 }

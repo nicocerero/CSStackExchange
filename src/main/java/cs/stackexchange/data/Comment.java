@@ -22,7 +22,12 @@ public class Comment {
 		super();
 		this.postId = (int) d.get("postId");
 		this.text = (String) d.get("text");
-		this.userId = (int) d.get("userId");
+		if(d.get("userId") != null) {
+			this.userId = (int) d.get("userId");
+		}else {
+			this.userId = -1;
+		}
+		
 
 	}
 

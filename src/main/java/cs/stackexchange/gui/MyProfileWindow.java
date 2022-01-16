@@ -5,10 +5,7 @@ import static cs.stackexchange.bd.Neo4jConnector.driver;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,7 +65,7 @@ public class MyProfileWindow extends JFrame {
 			public void run() {
 				try {
 
-					MyProfileWindow frame = new MyProfileWindow();
+					MyProfileWindow frame = new MyProfileWindow("prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -77,7 +74,7 @@ public class MyProfileWindow extends JFrame {
 		});
 	}
 
-	public MyProfileWindow() {
+	public MyProfileWindow(String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -121,7 +118,7 @@ public class MyProfileWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -146,7 +143,7 @@ public class MyProfileWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MainWindow mw = new MainWindow();
+				MainWindow mw = new MainWindow(username);
 				mw.setVisible(true);
 				dispose();
 
@@ -198,7 +195,7 @@ public class MyProfileWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JLabel lblUsername = new JLabel(getProp().toString());
+		JLabel lblUsername = new JLabel(username);
 		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		lblUsername.setBounds(67, 64, 166, 34);
 		panel_1.add(lblUsername);
@@ -269,21 +266,6 @@ public class MyProfileWindow extends JFrame {
 		});
 		panel_1.add(btnUpdate);
 
-	}
-
-	public static String getProp() {
-		File archivo = new File("resources/username");
-		try {
-			FileInputStream fis = new FileInputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.load(fis);
-			String nombre = propConfig.getProperty("user");
-			return nombre;
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	public String read(String username) {

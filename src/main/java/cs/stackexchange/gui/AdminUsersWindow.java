@@ -4,7 +4,6 @@ import static cs.stackexchange.bd.Neo4jConnector.driver;
 
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,6 +13,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
@@ -46,6 +46,7 @@ public class AdminUsersWindow extends JFrame {
 
 	DefaultListModel<User> model = new DefaultListModel<User>();
 	JList<User> listUsers;
+	JLabel lblMessage;
 
 	static Neo4jConnector neo4j;
 	Result result;
@@ -78,7 +79,7 @@ public class AdminUsersWindow extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		listUsers = checkUser();
+		listUsers = getUsers();
 		listUsers.setBounds(84, 51, 536, 354);
 
 		JScrollPane scroll = new JScrollPane(listUsers);
@@ -117,6 +118,13 @@ public class AdminUsersWindow extends JFrame {
 		});
 		contentPane.add(lblBack);
 
+		lblMessage = new JLabel("");
+		lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMessage.setForeground(new Color(128, 0, 0));
+		lblMessage.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblMessage.setBounds(213, 415, 250, 29);
+		contentPane.add(lblMessage);
+
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.setForeground(Color.WHITE);
 		btnDelete.setFont(new Font("Tahoma", Font.BOLD, 15));
@@ -128,18 +136,21 @@ public class AdminUsersWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(listUsers.getSelectedValue().getUsername());
-				delete(listUsers.getSelectedValue().getUsername());
-				AdminUsersWindow auw = new AdminUsersWindow();
-				auw.setVisible(true);
-				dispose();
+				if (listUsers.getSelectedValue() == null) {
+					lblMessage.setText("User not selected");
+				} else {
+					System.out.println(listUsers.getSelectedValue().getUsername());
+					delete(listUsers.getSelectedValue().getUsername());
+					model.remove(listUsers.getSelectedIndex());
+					JOptionPane.showMessageDialog(null, "User deleted succesfully");
+				}
 			}
 		});
 		contentPane.add(btnDelete);
 
 	}
 
-	public JList<User> checkUser() {
+	public JList<User> getUsers() {
 		JList<User> jlist = new JList<User>(model);
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
 

@@ -4,9 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,17 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoException;
-
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.UpdateResult;
-
 import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Sorts.*;
 
 import cs.stackexchange.bd.MongoDBConnector;
 import cs.stackexchange.data.Comment;
@@ -45,16 +34,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import javax.swing.JList;
 import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 
-public class QuestionWindow extends JFrame {
+public class AnswerWindow extends JFrame {
 
-	private DefaultListModel<Post> model = new DefaultListModel<Post>();
+	private DefaultListModel<Comment> model = new DefaultListModel<Comment>();
 
 	private JPanel contentPane;
 
@@ -69,9 +61,8 @@ public class QuestionWindow extends JFrame {
 			public void run() {
 				try {
 
-					QuestionWindow frame = new QuestionWindow(post.getId(), "prueba");
+					AnswerWindow frame = new AnswerWindow(post.getId(),"prueba");
 					frame.setVisible(true);
-
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
 				}
@@ -79,7 +70,7 @@ public class QuestionWindow extends JFrame {
 		});
 	}
 
-	public QuestionWindow(int id, String username) {
+	public AnswerWindow(int id,String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -104,7 +95,7 @@ public class QuestionWindow extends JFrame {
 				Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel lblNewLabel_1 = new JLabel("User: " + username);
+		JLabel lblNewLabel_1 = new JLabel("User: " + getProp().toString());
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_1.gridx = 1;
@@ -233,26 +224,28 @@ public class QuestionWindow extends JFrame {
 		lblStackExchange.setFont(new Font("Arial Nova", Font.PLAIN, 33));
 		lblStackExchange.setBounds(118, 0, 299, 50);
 		panel_1.add(lblStackExchange);
+		
+		JTextPane txtAnswer = new JTextPane();
+		txtAnswer.setContentType("text/html");
+		txtAnswer.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 10));
+		txtAnswer.setEditable(false);
+		txtAnswer.setBounds(27, 74, 486, 69);
+		
+		JScrollPane scroll2 = new JScrollPane(txtAnswer);
+		scroll2.setBounds(27, 51, 486, 215);
+		panel_1.add(scroll2);
 
-		JTextArea txtQuestion = new JTextArea();
-		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 20));
-		txtQuestion.setLineWrap(true);
-		txtQuestion.setWrapStyleWord(true);
-		txtQuestion.setEditable(false);
-		txtQuestion.setBounds(27, 74, 486, 69);
-		panel_1.add(txtQuestion);
-
-		JList<Post> list = getPostById(id);
+		JList<Comment> list = getPostById(id);
 		list.setBounds(38, 45, 490, 380);
-		list.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 10));
-		txtQuestion.setText("Q: " + post.getTitle());
+		txtAnswer.setText(post.getBody());
 
-		JLabel lblScore = new JLabel("Score: " + post.getScore());
-		lblScore.setBounds(27, 153, 64, 13);
+		JLabel lblScore = new JLabel(String.valueOf(post.getScore()));
+		lblScore.setHorizontalAlignment(SwingConstants.CENTER);
+		lblScore.setBounds(0, 152, 31, 13);
 		panel_1.add(lblScore);
 
 		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(10, 176, 516, 215);
+		scroll.setBounds(10, 312, 516, 79);
 		panel_1.add(scroll);
 
 		MyCellRenderer cellRenderer = new MyCellRenderer(380);
@@ -265,36 +258,7 @@ public class QuestionWindow extends JFrame {
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnSelect.setBackground(Color.BLACK);
 		btnSelect.setBounds(10, 401, 133, 33);
-		btnSelect.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int id = list.getSelectedValue().getId();
-				AnswerWindow aw = new AnswerWindow(id, username);
-				aw.setVisible(true);
-				dispose();
-
-			}
-		});
 		panel_1.add(btnSelect);
-
-		JButton btnNewAnswer = new JButton("New Answer");
-		btnNewAnswer.setForeground(Color.WHITE);
-		btnNewAnswer.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btnNewAnswer.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
-				new LineBorder(new Color(0, 0, 0), 2, true)));
-		btnNewAnswer.setBackground(Color.BLACK);
-		btnNewAnswer.setBounds(393, 401, 133, 33);
-		btnNewAnswer.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				NewAnswerWindow naw = new NewAnswerWindow(id, username);
-				naw.setVisible(true);
-				dispose();
-			}
-		});
-		panel_1.add(btnNewAnswer);
 
 		JButton btnComment = new JButton("Comment");
 		btnComment.setForeground(Color.WHITE);
@@ -302,24 +266,39 @@ public class QuestionWindow extends JFrame {
 		btnComment.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnComment.setBackground(Color.BLACK);
-		btnComment.setBounds(353, 143, 106, 25);
+		btnComment.setBounds(393, 401, 133, 33);
 		panel_1.add(btnComment);
+		
+		JLabel lblComments = new JLabel("Comments:");
+		lblComments.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblComments.setBounds(13, 278, 130, 24);
+		panel_1.add(lblComments);
 
-		// PRUEBA
-		// Comment c = new Comment(id, "Comentario de prueba by Iñigo", 34);
-		// this.addComment(id, c);
+	}
 
+	public static String getProp() {
+		File archivo = new File("resources/username");
+		try {
+			FileInputStream fis = new FileInputStream(archivo);
+			Properties propConfig = new Properties();
+			propConfig.load(fis);
+			String nombre = propConfig.getProperty("user");
+			return nombre;
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "ERROR", e);
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
 	 * Post -> title, body, tags, votes, comments, ... Answers -> title, body,
 	 * votes, comment, ordered by votes (first always correct answer).
 	 */
-	public JList<Post> getPostById(int id) {
-		JList<Post> list1 = new JList<Post>(model);
+	public JList<Comment> getPostById(int id) {
+		JList<Comment> list1 = new JList<Comment>(model);
 		MongoDBConnector.connect();
 
-		// First get the question Post
 		Iterator<Document> it = MongoDBConnector.collection.find(eq("id", id)).iterator();
 
 		if (!it.hasNext()) {
@@ -328,38 +307,10 @@ public class QuestionWindow extends JFrame {
 		}
 		Document d = it.next();
 		post = new Post(d);
-
-		// If Post has an acceptedAnswerId, then get that one first, 10 total
-		// answers ranked by upvotes
-		ArrayList<Post> temp = new ArrayList<>();
-		it = MongoDBConnector.collection.find(eq("parentId", post.getId())).sort(descending("score"))
-				.iterator();
-
-		if (!it.hasNext()) {
-			return list1;
-		}
-
-		// If there are answersm, add them to a temporal list.
-		while (it.hasNext()) {
-			Post pTemp = new Post(it.next());
-			temp.add(pTemp);
-		}
-
-		// We have to make sure that the accepted answer is the first one.
-		if (post.getAcceptedAnswerId() != 0) { // That is, there is an accepted answer.
-			for (Post po : temp) {
-				if (po.getId() == post.getAcceptedAnswerId()) {
-					model.addElement(po);
-					break;
-				}
-			}
-			// Then we delete the element from the list
-			temp.removeIf(po -> po.getId() == post.getAcceptedAnswerId());
-		}
-
-		// Now we add the rest of the answers
-		for (Post po : temp) {
-			model.addElement(po);
+		
+		ArrayList<Comment> temp = post.getComments();
+		for (Comment co : temp) {
+			model.addElement(co);
 		}
 
 		return list1;
@@ -380,41 +331,12 @@ public class QuestionWindow extends JFrame {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-			Post label = (Post) value;
-			String body = label.getBody();
-			int score = label.getScore();
-			String date = label.getCreationDate().toString().split("T")[0];
-			String text = HTML_1 + String.valueOf(width) + HTML_2 + "Score: " + score + "<br/>Cretation date: " + date
-					+ "<br/><br/>" + body + "<br/><br/><br/>" + HTML_3;
+			Comment label = (Comment) value;
+			String body = label.getText();
+			int userid = label.getUserId();
+			String text = HTML_1 + String.valueOf(width) + HTML_2 +"(UserId: " + userid +")"+ body + "<br/><br/>" + HTML_3;
 			return super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
 		}
 
-	}
-
-	// UPDATE COMMENTS
-	public void addComment(int postId, Comment comment) {
-		MongoDBConnector.connect();
-
-		Document query = new Document().append("id", postId);
-
-		Map<String, Object> documentMap = new HashMap<String, Object>();
-
-		documentMap.put("postId", comment.getPostId());
-		documentMap.put("text", comment.getText());
-		documentMap.put("userId", comment.getUserId());
-		Bson updates = Updates.combine(
-				Updates.addToSet("comments", new BasicDBObject(documentMap)));
-
-		UpdateOptions options = new UpdateOptions().upsert(true);
-
-		try {
-
-			UpdateResult result = MongoDBConnector.collection.updateOne(query, updates, options);
-			System.out.println("Modified document count: " + result.getModifiedCount());
-			System.out.println("Upserted id: " + result.getUpsertedId()); // only contains a value when an upsert is
-																			// performed
-		} catch (MongoException me) {
-			System.err.println("Unable to update due to an error: " + me);
-		}
 	}
 }

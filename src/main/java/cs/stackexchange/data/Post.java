@@ -1,6 +1,8 @@
 package cs.stackexchange.data;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.bson.Document;
 
 public class Post {
@@ -18,8 +20,9 @@ public class Post {
 	private ArrayList<Comment> comments;
 	private int parentId;
 
-	public Post(int id, int postTypeId, int acceptedAnswerId, String creationDate, int score, int viewCount, String title,
-			String body, int ownerUserId, ArrayList<Tag> tags, ArrayList<Comment> comments, int parentId) {
+	public Post(int id, int postTypeId, int acceptedAnswerId, String creationDate, int score, int viewCount,
+			String title, String body, int ownerUserId, ArrayList<Tag> tags, ArrayList<Comment> comments,
+			int parentId) {
 		super();
 		this.id = id;
 		this.postTypeId = postTypeId;
@@ -43,49 +46,47 @@ public class Post {
 		super();
 		this.id = (int) d.get("id");
 		this.postTypeId = (int) d.get("postTypeId");
-		if(d.get("acceptedAnswerId") == null) {
+		if (d.get("acceptedAnswerId") == null) {
 			this.acceptedAnswerId = 0;
-		}else {
+		} else {
 			this.acceptedAnswerId = (int) d.get("acceptedAnswerId");
 		}
-		this.creationDate = (String) d.get("creationDate");
+		this.creationDate = (String) d.get("creationDate").toString();
 		this.score = (int) d.get("score");
-		if(d.get("viewCount") == null) {
+		if (d.get("viewCount") == null) {
 			this.viewCount = 0;
-		}else {
+		} else {
 			this.viewCount = (int) d.get("viewCount");
 		}
-		if(d.get("title") == null) {
+		if (d.get("title") == null) {
 			this.title = "";
-		}else {
+		} else {
 			this.title = (String) d.get("title");
 		}
 		this.body = (String) d.get("body");
 		this.ownerUserId = (int) d.get("ownerUserId");
-		if(d.get("parentId") == null) {
+		if (d.get("parentId") == null) {
 			this.parentId = 0;
-		}else {
+		} else {
 			this.parentId = (int) d.get("parentId");
 		}
 		// Now, handle the iterators for Tags and Comments.
 		this.tags = new ArrayList<>();
-//		@SuppressWarnings("unchecked")
-//		Iterator<Document> it_tag = (Iterator<Document>) d.get("tags");
-//		while (it_tag.hasNext()) {
-//			Tag t = new Tag(it_tag.next());
-//			if (t != null) {
-//				this.tags.add(t);
-//			}
-//		}
+		Iterator<Document> it_tag = d.getList("tags", Document.class).iterator();
+		while (it_tag.hasNext()) {
+			Tag t = new Tag(it_tag.next());
+			if (t != null) {
+				this.tags.add(t);
+			}
+		}
 		this.comments = new ArrayList<>();
-//		@SuppressWarnings("unchecked")
-//		Iterator<Document> it_com = (Iterator<Document>) d.get("comments");
-//		while (it_com.hasNext()) {
-//			Comment c = new Comment(it_com.next());
-//			if (c != null) {
-//				this.comments.add(c);
-//			}
-//		}
+		Iterator<Document> it_com = d.getList("comments", Document.class).iterator();
+		while (it_com.hasNext()) {
+			Comment c = new Comment(it_com.next());
+			if (c != null) {
+				this.comments.add(c);
+			}
+		}
 	}
 
 	public int getId() {
@@ -186,12 +187,12 @@ public class Post {
 
 	@Override
 	public String toString() {
-		if(postTypeId == 0) {
-			return "(id:" + id + ") | "+ score + " | Q: " + title;
-		}else {
+		if (postTypeId == 0) {
+			return "(id:" + id + ") | " + score + " | Q: " + title;
+		} else {
 			return "Answer [score=" + score + "] body=" + body;
 		}
-		
+
 	}
 
 }
