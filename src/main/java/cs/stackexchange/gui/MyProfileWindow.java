@@ -268,21 +268,6 @@ public class MyProfileWindow extends JFrame {
 
 	}
 
-	/*public static String getProp() {
-		File archivo = new File("resources/username");
-		try {
-			FileInputStream fis = new FileInputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.load(fis);
-			String nombre = propConfig.getProperty("user");
-			return nombre;
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-			return null;
-		}
-	}*/
-
 	public String read(String username) {
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
 

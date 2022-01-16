@@ -167,20 +167,6 @@ public class LoginWindow extends JFrame {
 		contentPane.add(registerButton);
 	}
 
-	/*public static void setProp(String username) {
-		File archivo = new File("resources/username");
-		try {
-			FileOutputStream fos = new FileOutputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.setProperty("user", username);
-			propConfig.store(fos, "program Settings");
-			fos.close();
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-		}
-	}*/
-
 	public String checkUser(String username) {
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
 

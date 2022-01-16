@@ -62,7 +62,7 @@ public class UserProfileWindow extends JFrame {
 			public void run() {
 				try {
 
-					UserProfileWindow frame = new UserProfileWindow(user.getId(),"prueba");
+					UserProfileWindow frame = new UserProfileWindow(user.getId(), "prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -71,7 +71,7 @@ public class UserProfileWindow extends JFrame {
 		});
 	}
 
-	public UserProfileWindow(int id,String username) {
+	public UserProfileWindow(int id, String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -234,21 +234,6 @@ public class UserProfileWindow extends JFrame {
 		panel_1.add(lblDate);
 
 	}
-
-	/*public static String getProp() {
-		File archivo = new File("resources/username");
-		try {
-			FileInputStream fis = new FileInputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.load(fis);
-			String nombre = propConfig.getProperty("user");
-			return nombre;
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-			return null;
-		}
-	}*/
 
 	public String read(int id) {
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");

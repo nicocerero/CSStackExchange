@@ -303,21 +303,6 @@ public class QuestionWindow extends JFrame {
 
 	}
 
-	/*public static String getProp() {
-		File archivo = new File("resources/username");
-		try {
-			FileInputStream fis = new FileInputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.load(fis);
-			String nombre = propConfig.getProperty("user");
-			return nombre;
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-			return null;
-		}
-	}*/
-
 	/**
 	 * Post -> title, body, tags, votes, comments, ... Answers -> title, body,
 	 * votes, comment, ordered by votes (first always correct answer).
@@ -404,8 +389,6 @@ public class QuestionWindow extends JFrame {
 
 		Document query = new Document().append("id", postId);
 
-		// import com.mongodb.client.model.Updates;
-		// import org.bson.conversions.Bson;
 		Bson updates = Updates.combine(
 				Updates.addToSet("comments", comment));
 

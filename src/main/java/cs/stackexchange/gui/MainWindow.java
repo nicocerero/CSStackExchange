@@ -251,21 +251,6 @@ public class MainWindow extends JFrame {
 
 	}
 
-	/*public static String getProp() {
-		File archivo = new File("resources/username");
-		try {
-			FileInputStream fis = new FileInputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.load(fis);
-			String nombre = propConfig.getProperty("user");
-			return nombre;
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-			return null;
-		}
-	}*/
-
 	public JList<Post> getTopPosts() {
 		JList<Post> listPosts = new JList<Post>(model);
 		MongoDBConnector.connect();
@@ -280,8 +265,6 @@ public class MainWindow extends JFrame {
 			p.setTitle((String) d.get("title"));
 			p.setId((int) d.get("id"));
 			p.setScore((int) d.get("score"));
-
-			// System.out.println("Imprimiendo post: " + p.toString());
 			model.addElement(p);
 		}
 

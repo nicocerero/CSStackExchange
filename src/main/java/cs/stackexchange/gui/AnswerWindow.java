@@ -228,8 +228,6 @@ public class AnswerWindow extends JFrame {
 		JTextPane txtAnswer = new JTextPane();
 		txtAnswer.setContentType("text/html");
 		txtAnswer.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 10));
-//		txtAnswer.setLineWrap(true);
-//		txtAnswer.setWrapStyleWord(true);
 		txtAnswer.setEditable(false);
 		txtAnswer.setBounds(27, 74, 486, 69);
 		
@@ -335,9 +333,7 @@ public class AnswerWindow extends JFrame {
 				boolean cellHasFocus) {
 			Comment label = (Comment) value;
 			String body = label.getText();
-			//int id = label.getId();
 			int userid = label.getUserId();
-//			String date = label.getCreationDate().toString().split("T")[0];
 			String text = HTML_1 + String.valueOf(width) + HTML_2 +"(UserId: " + userid +")"+ body + "<br/><br/>" + HTML_3;
 			return super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
 		}

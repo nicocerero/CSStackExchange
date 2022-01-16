@@ -291,21 +291,6 @@ public class NewAnswerWindow extends JFrame {
 		panel_1.add(btnCancel);
 	}
 
-	/*public static String getUser() {
-		File archivo = new File("resources/username");
-		try {
-			FileInputStream fis = new FileInputStream(archivo);
-			Properties propConfig = new Properties();
-			propConfig.load(fis);
-			String nombre = propConfig.getProperty("user");
-			return nombre;
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "ERROR", e);
-			e.printStackTrace();
-			return null;
-		}
-	}*/
-
 	public void createAnswer(String text, int id,String username) {
 		MongoDBConnector.connect();
 
@@ -317,7 +302,7 @@ public class NewAnswerWindow extends JFrame {
 		d.append("score", 0);
 		d.append("viewCount", null);
 		d.append("body", text);
-		d.append("ownerUserId", checkUser(username));
+		d.append("ownerUserId", getUserId(username));
 		d.append("title", null);
 		d.append("tags", new ArrayList<Object>());
 		d.append("parentId", id);
@@ -327,7 +312,7 @@ public class NewAnswerWindow extends JFrame {
 		JOptionPane.showMessageDialog(null, "Answer added succesfully");
 	}
 
-	public int checkUser(String username) {
+	public int getUserId(String username) {
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
 
 		try (Session session = driver.session()) {
