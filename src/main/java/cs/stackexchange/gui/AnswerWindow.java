@@ -238,7 +238,7 @@ public class AnswerWindow extends JFrame {
 
 		JLabel lblScore = new JLabel(String.valueOf(post.getScore()));
 		lblScore.setHorizontalAlignment(SwingConstants.CENTER);
-		lblScore.setBounds(0, 152, 31, 13);
+		lblScore.setBounds(0, 152, 28, 13);
 		panel_1.add(lblScore);
 
 		JScrollPane scroll = new JScrollPane(list);

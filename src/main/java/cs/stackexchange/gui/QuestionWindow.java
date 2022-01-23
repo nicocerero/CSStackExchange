@@ -4,9 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,20 +17,11 @@ import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoException;
-
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.UpdateResult;
 
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.*;
 
 import cs.stackexchange.bd.MongoDBConnector;
-import cs.stackexchange.data.Comment;
 import cs.stackexchange.data.Post;
 
 import javax.swing.JLabel;
@@ -51,6 +40,8 @@ import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 
 public class QuestionWindow extends JFrame {
 
@@ -69,7 +60,7 @@ public class QuestionWindow extends JFrame {
 			public void run() {
 				try {
 
-					QuestionWindow frame = new QuestionWindow(post.getId(), "prueba");
+					QuestionWindow frame = new QuestionWindow(3, "prueba");
 					frame.setVisible(true);
 
 				} catch (Exception e) {
@@ -228,31 +219,35 @@ public class QuestionWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JLabel lblStackExchange = new JLabel("CS StackExchange");
-		lblStackExchange.setToolTipText("");
-		lblStackExchange.setFont(new Font("Arial Nova", Font.PLAIN, 33));
-		lblStackExchange.setBounds(118, 0, 299, 50);
-		panel_1.add(lblStackExchange);
-
-		JTextArea txtQuestion = new JTextArea();
-		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 20));
-		txtQuestion.setLineWrap(true);
-		txtQuestion.setWrapStyleWord(true);
-		txtQuestion.setEditable(false);
-		txtQuestion.setBounds(27, 74, 486, 69);
-		panel_1.add(txtQuestion);
-
 		JList<Post> list = getPostById(id);
 		list.setBounds(38, 45, 490, 380);
 		list.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 10));
+		
+		JTextArea txtQuestion = new JTextArea();
+		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 17));
+		txtQuestion.setLineWrap(true);
+		txtQuestion.setWrapStyleWord(true);
+		txtQuestion.setEditable(false);
+		txtQuestion.setBounds(27, 10, 486, 56);
 		txtQuestion.setText("Q: " + post.getTitle());
+		panel_1.add(txtQuestion);
+		
+		JTextPane txtBody = new JTextPane();
+		txtBody.setContentType("text/html");
+		txtBody.setEditable(false);
+		txtBody.setText(post.getBody());
 
-		JLabel lblScore = new JLabel("Score: " + post.getScore());
-		lblScore.setBounds(27, 153, 64, 13);
+		JScrollPane scrollBody = new JScrollPane(txtBody);
+		scrollBody.setBounds(27, 89, 486, 115);
+		panel_1.add(scrollBody);
+
+		JLabel lblScore = new JLabel("" + post.getScore());
+		lblScore.setHorizontalAlignment(SwingConstants.CENTER);
+		lblScore.setBounds(0, 139, 27, 13);
 		panel_1.add(lblScore);
 
 		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(10, 176, 516, 215);
+		scroll.setBounds(10, 249, 516, 142);
 		panel_1.add(scroll);
 
 		MyCellRenderer cellRenderer = new MyCellRenderer(380);
@@ -302,12 +297,8 @@ public class QuestionWindow extends JFrame {
 		btnComment.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnComment.setBackground(Color.BLACK);
-		btnComment.setBounds(353, 143, 106, 25);
+		btnComment.setBounds(407, 214, 106, 25);
 		panel_1.add(btnComment);
-
-		// PRUEBA
-		// Comment c = new Comment(id, "Comentario de prueba by Iñigo", 34);
-		// this.addComment(id, c);
 
 	}
 
@@ -332,8 +323,7 @@ public class QuestionWindow extends JFrame {
 		// If Post has an acceptedAnswerId, then get that one first, 10 total
 		// answers ranked by upvotes
 		ArrayList<Post> temp = new ArrayList<>();
-		it = MongoDBConnector.collection.find(eq("parentId", post.getId())).sort(descending("score"))
-				.iterator();
+		it = MongoDBConnector.collection.find(eq("parentId", post.getId())).sort(descending("score")).iterator();
 
 		if (!it.hasNext()) {
 			return list1;
@@ -391,30 +381,4 @@ public class QuestionWindow extends JFrame {
 
 	}
 
-	// UPDATE COMMENTS
-	public void addComment(int postId, Comment comment) {
-		MongoDBConnector.connect();
-
-		Document query = new Document().append("id", postId);
-
-		Map<String, Object> documentMap = new HashMap<String, Object>();
-
-		documentMap.put("postId", comment.getPostId());
-		documentMap.put("text", comment.getText());
-		documentMap.put("userId", comment.getUserId());
-		Bson updates = Updates.combine(
-				Updates.addToSet("comments", new BasicDBObject(documentMap)));
-
-		UpdateOptions options = new UpdateOptions().upsert(true);
-
-		try {
-
-			UpdateResult result = MongoDBConnector.collection.updateOne(query, updates, options);
-			System.out.println("Modified document count: " + result.getModifiedCount());
-			System.out.println("Upserted id: " + result.getUpsertedId()); // only contains a value when an upsert is
-																			// performed
-		} catch (MongoException me) {
-			System.err.println("Unable to update due to an error: " + me);
-		}
-	}
 }

@@ -1,10 +1,8 @@
 package cs.stackexchange.gui;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Projections.excludeId;
-import static com.mongodb.client.model.Projections.fields;
-import static com.mongodb.client.model.Projections.include;
-import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Sorts.*;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -159,7 +157,7 @@ public class AdminPostWindow extends JFrame{
 
 		Bson projection = fields(include("title", "score","id"), excludeId());
 		FindIterable<Document> iterDoc = MongoDBConnector.collection.find(eq("postTypeId", 1)).projection(projection)
-				.sort(descending("score"));
+				.sort(ascending("id"));
 		Iterator<Document> it = iterDoc.iterator();
 		while (it.hasNext()) {
 			model.addElement(it.next().toString().replace("Document{{","").replace("}}", "").replace(", title="," | Q:").replace("score=", ""));

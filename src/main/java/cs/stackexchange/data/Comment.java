@@ -22,12 +22,11 @@ public class Comment {
 		super();
 		this.postId = (int) d.get("postId");
 		this.text = (String) d.get("text");
-		if(d.get("userId") != null) {
+		if (d.get("userId") != null) {
 			this.userId = (int) d.get("userId");
-		}else {
+		} else {
 			this.userId = -1;
 		}
-		
 
 	}
 
@@ -53,6 +52,10 @@ public class Comment {
 
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+
+	public String toString() {
+		return "Post id: " + postId + " | Text: " + text + " | User id:" + userId;
 	}
 
 }

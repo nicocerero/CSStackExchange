@@ -6,8 +6,9 @@ import static cs.stackexchange.bd.Neo4jConnector.driver;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,17 +19,22 @@ import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoException;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 
 import cs.stackexchange.bd.MongoDBConnector;
 import cs.stackexchange.bd.Neo4jConnector;
+import cs.stackexchange.data.Comment;
 import cs.stackexchange.data.Post;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -38,15 +44,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.time.LocalDate;
 
 import javax.swing.JButton;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
 import java.awt.Font;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 
-public class NewAnswerWindow extends JFrame {
+import java.awt.Rectangle;
+
+public class NewCommentWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -63,7 +71,7 @@ public class NewAnswerWindow extends JFrame {
 			public void run() {
 				try {
 
-					NewAnswerWindow frame = new NewAnswerWindow(3, "prueba");
+					NewCommentWindow frame = new NewCommentWindow(3, "prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -72,7 +80,7 @@ public class NewAnswerWindow extends JFrame {
 		});
 	}
 
-	public NewAnswerWindow(int id, String username) {
+	public NewCommentWindow(int id, String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -221,26 +229,26 @@ public class NewAnswerWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JLabel lblAnswer = new JLabel("Answer:");
-		lblAnswer.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblAnswer.setBounds(10, 104, 130, 24);
-		panel_1.add(lblAnswer);
+		JLabel lblComment = new JLabel("Comment: ");
+		lblComment.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblComment.setBounds(10, 210, 130, 24);
+		panel_1.add(lblComment);
 
-		JTextArea txtAnswer = new JTextArea();
-		txtAnswer.setText("Write you answer here...");
-		txtAnswer.setForeground(Color.GRAY);
-		txtAnswer.setWrapStyleWord(true);
-		txtAnswer.setBounds(10, 138, 516, 239);
-		txtAnswer.addMouseListener(new MouseAdapter() {
+		JTextArea txtComment = new JTextArea();
+		txtComment.setText("Write your comment here...");
+		txtComment.setForeground(Color.GRAY);
+		txtComment.setWrapStyleWord(true);
+		txtComment.setBounds(10, 138, 516, 239);
+		txtComment.addMouseListener(new MouseAdapter() {
 
 			public void mouseClicked(MouseEvent e) {
-				txtAnswer.setText("");
-				txtAnswer.setForeground(Color.BLACK);
+				txtComment.setText("");
+				txtComment.setForeground(Color.BLACK);
 			}
 		});
 
-		JScrollPane scroll = new JScrollPane(txtAnswer);
-		scroll.setBounds(txtAnswer.getBounds());
+		JScrollPane scroll = new JScrollPane(txtComment);
+		scroll.setBounds(new Rectangle(10, 244, 516, 133));
 		panel_1.add(scroll);
 
 		JButton btnSave = new JButton("Save");
@@ -254,7 +262,10 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				createAnswer(txtAnswer.getText().toString(), id, username);
+
+				Comment c = new Comment(id, txtComment.getText().toString(), getUserId(username));
+				addComment(id, c);
+
 				QuestionWindow qw = new QuestionWindow(id, username);
 				qw.setVisible(true);
 				dispose();
@@ -262,14 +273,20 @@ public class NewAnswerWindow extends JFrame {
 		});
 		panel_1.add(btnSave);
 
-		JTextArea txtQuestion = new JTextArea();
-		txtQuestion.setWrapStyleWord(true);
-		txtQuestion.setText("Q: " + getPostById(id).getTitle());
-		txtQuestion.setLineWrap(true);
-		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 20));
-		txtQuestion.setEditable(false);
-		txtQuestion.setBounds(22, 25, 486, 69);
-		panel_1.add(txtQuestion);
+		JTextPane txtPost = new JTextPane();
+		if (getPostById(id).getTitle() == null) {
+			txtPost.setText(getPostById(id).getBody());
+			txtPost.setContentType("text/html");
+		} else {
+			txtPost.setText(getPostById(id).getTitle());
+			txtPost.setFont(new Font("Arial", Font.PLAIN, 20));
+		}
+		txtPost.setEditable(false);
+		txtPost.setBounds(22, 25, 486, 69);
+
+		JScrollPane scrollPost = new JScrollPane(txtPost);
+		scrollPost.setBounds(22, 25, 486, 175);
+		panel_1.add(scrollPost);
 
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setForeground(Color.WHITE);
@@ -288,27 +305,6 @@ public class NewAnswerWindow extends JFrame {
 			}
 		});
 		panel_1.add(btnCancel);
-	}
-
-	public void createAnswer(String text, int id, String username) {
-		MongoDBConnector.connect();
-
-		Document d = new Document();
-		d.append("id", getLastId().getId() + 1);
-		d.append("postTypeId", 2);
-		d.append("acceptedAnswerId", null);
-		d.append("creationDate", LocalDate.now().toString());
-		d.append("score", 0);
-		d.append("viewCount", null);
-		d.append("body", text);
-		d.append("ownerUserId", getUserId(username));
-		d.append("title", null);
-		d.append("tags", new ArrayList<Object>());
-		d.append("parentId", id);
-		d.append("comments", new ArrayList<Object>());
-
-		MongoDBConnector.collection.insertOne(d);
-		JOptionPane.showMessageDialog(null, "Answer added succesfully");
 	}
 
 	public int getUserId(String username) {
@@ -355,5 +351,31 @@ public class NewAnswerWindow extends JFrame {
 		Document d = it.next();
 		Post p = new Post(d);
 		return p;
+	}
+
+	// UPDATE COMMENTS
+	public void addComment(int postId, Comment comment) {
+		MongoDBConnector.connect();
+
+		Document query = new Document().append("id", postId);
+
+		Map<String, Object> documentMap = new HashMap<String, Object>();
+
+		documentMap.put("postId", comment.getPostId());
+		documentMap.put("text", comment.getText());
+		documentMap.put("userId", comment.getUserId());
+		Bson updates = Updates.combine(Updates.addToSet("comments", new BasicDBObject(documentMap)));
+
+		UpdateOptions options = new UpdateOptions().upsert(true);
+
+		try {
+
+			UpdateResult result = MongoDBConnector.collection.updateOne(query, updates, options);
+			System.out.println("Modified document count: " + result.getModifiedCount());
+			System.out.println("Upserted id: " + result.getUpsertedId()); // only contains a value when an upsert is
+																			// performed
+		} catch (MongoException me) {
+			System.err.println("Unable to update due to an error: " + me);
+		}
 	}
 }

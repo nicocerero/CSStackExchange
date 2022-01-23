@@ -156,7 +156,7 @@ public class AdminUsersWindow extends JFrame {
 
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
-				result = tx.run("MATCH (n:User) RETURN n.id, n.aboutMe,n.creationDate,n.reputation,n.username");
+				result = tx.run("MATCH (n:User) RETURN n.id, n.aboutMe,n.creationDate,n.reputation,n.username ORDER BY n.id");
 				list = result.list();
 				Iterator<Record> iterator = list.iterator();
 				while (iterator.hasNext()) {
@@ -183,7 +183,7 @@ public class AdminUsersWindow extends JFrame {
 		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
 		try (Session session = driver.session()) {
 			session.writeTransaction(tx -> {
-				result = tx.run("MATCH (n:User) WHERE n.username='" + username + "' DETACH DELETE n");
+				tx.run("MATCH (n:User) WHERE n.username='" + username + "' DETACH DELETE n");
 				return null;
 			});
 		}

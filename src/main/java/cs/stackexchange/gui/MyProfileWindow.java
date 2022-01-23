@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import javax.swing.JTextArea;
 import javax.swing.border.CompoundBorder;
@@ -44,7 +45,6 @@ public class MyProfileWindow extends JFrame {
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
 	static Neo4jConnector neo4j;
-	static Neo4jConnector neo4j_2;
 
 	String un;
 	String un2;
@@ -244,32 +244,18 @@ public class MyProfileWindow extends JFrame {
 		btnMyPosts.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnMyPosts.setBackground(Color.BLACK);
-		btnMyPosts.setBounds(45, 341, 126, 34);
+		btnMyPosts.setBounds(45, 384, 126, 34);
 		btnMyPosts.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MyPostsWindow mpw = new MyPostsWindow(username);
 				mpw.setVisible(true);
 				dispose();
-				
+
 			}
 		});
 		panel_1.add(btnMyPosts);
-
-		JButton btnMyComments = new JButton("My comments");
-		btnMyComments.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnMyComments.setForeground(Color.WHITE);
-		btnMyComments.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btnMyComments.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
-
-				new LineBorder(new Color(0, 0, 0), 2, true)));
-		btnMyComments.setBackground(Color.BLACK);
-		btnMyComments.setBounds(45, 384, 126, 34);
-		panel_1.add(btnMyComments);
 
 		JButton btnDeleteAccout = new JButton("Delete Accout");
 		btnDeleteAccout.setForeground(Color.WHITE);
@@ -277,7 +263,27 @@ public class MyProfileWindow extends JFrame {
 		btnDeleteAccout.setBorder(
 				new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(Color.RED, 2, true)));
 		btnDeleteAccout.setBackground(Color.RED);
-		btnDeleteAccout.setBounds(400, 385, 126, 33);
+		btnDeleteAccout.setBounds(393, 384, 133, 34);
+		btnDeleteAccout.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int sel = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete your account?",
+						"Confimation", JOptionPane.YES_NO_OPTION);
+
+				if (sel == 0) {
+					try {
+						delete(username);
+						LoginWindow lw = new LoginWindow();
+						lw.setVisible(true);
+						dispose();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+
+			}
+		});
 		panel_1.add(btnDeleteAccout);
 
 	}
@@ -300,7 +306,7 @@ public class MyProfileWindow extends JFrame {
 	}
 
 	public String update(String username) {
-		neo4j_2 = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
 
 		try (Session session = driver.session()) {
 			session.writeTransaction(tx -> {
@@ -312,6 +318,17 @@ public class MyProfileWindow extends JFrame {
 			JOptionPane.showMessageDialog(this, "Description updated successfully", "Confirmation",
 					JOptionPane.INFORMATION_MESSAGE);
 			return un;
+		}
+	}
+
+	public void delete(String username) {
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+		try (Session session = driver.session()) {
+			session.writeTransaction(tx -> {
+				tx.run("MATCH (u:User) WHERE u.username = '" + username + "' DETACH DELETE u");
+				return null;
+			});
+
 		}
 	}
 }

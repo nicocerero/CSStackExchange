@@ -70,7 +70,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return username + " | " + reputation;
+		return "Id: " + id + " | " + username + " | " + reputation;
 	}
 
 }

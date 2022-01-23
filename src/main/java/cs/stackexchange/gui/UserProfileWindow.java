@@ -207,6 +207,7 @@ public class UserProfileWindow extends JFrame {
 		JLabel lblUsername = new JLabel(user.getUsername());
 		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		lblUsername.setBounds(67, 64, 166, 34);
+		lblUsername.setForeground(Color.ORANGE);
 		panel_1.add(lblUsername);
 
 		textArea = new JTextArea();

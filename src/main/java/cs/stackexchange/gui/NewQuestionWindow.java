@@ -46,7 +46,7 @@ import javax.swing.UIManager;
 import java.awt.Font;
 import javax.swing.JTextArea;
 
-public class NewAnswerWindow extends JFrame {
+public class NewQuestionWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -63,7 +63,7 @@ public class NewAnswerWindow extends JFrame {
 			public void run() {
 				try {
 
-					NewAnswerWindow frame = new NewAnswerWindow(3, "prueba");
+					NewQuestionWindow frame = new NewQuestionWindow("prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -72,7 +72,7 @@ public class NewAnswerWindow extends JFrame {
 		});
 	}
 
-	public NewAnswerWindow(int id, String username) {
+	public NewQuestionWindow(String username) {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -221,27 +221,44 @@ public class NewAnswerWindow extends JFrame {
 		contentPane.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(null);
 
-		JLabel lblAnswer = new JLabel("Answer:");
-		lblAnswer.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblAnswer.setBounds(10, 104, 130, 24);
-		panel_1.add(lblAnswer);
+		JLabel lblBody = new JLabel("Body:");
+		lblBody.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblBody.setBounds(10, 104, 130, 24);
+		panel_1.add(lblBody);
 
-		JTextArea txtAnswer = new JTextArea();
-		txtAnswer.setText("Write you answer here...");
-		txtAnswer.setForeground(Color.GRAY);
-		txtAnswer.setWrapStyleWord(true);
-		txtAnswer.setBounds(10, 138, 516, 239);
-		txtAnswer.addMouseListener(new MouseAdapter() {
+		JTextArea txtBody = new JTextArea();
+		txtBody.setText("Describe your question here...");
+		txtBody.setForeground(Color.GRAY);
+		txtBody.setWrapStyleWord(true);
+		txtBody.setBounds(10, 138, 516, 239);
+		txtBody.addMouseListener(new MouseAdapter() {
 
 			public void mouseClicked(MouseEvent e) {
-				txtAnswer.setText("");
-				txtAnswer.setForeground(Color.BLACK);
+				txtBody.setText("");
+				txtBody.setForeground(Color.BLACK);
 			}
 		});
 
-		JScrollPane scroll = new JScrollPane(txtAnswer);
-		scroll.setBounds(txtAnswer.getBounds());
+		JScrollPane scroll = new JScrollPane(txtBody);
+		scroll.setBounds(txtBody.getBounds());
 		panel_1.add(scroll);
+
+		JTextArea txtQuestion = new JTextArea();
+		txtQuestion.setWrapStyleWord(true);
+		txtQuestion.setForeground(Color.GRAY);
+		txtQuestion.addMouseListener(new MouseAdapter() {
+
+			public void mouseClicked(MouseEvent e) {
+				txtBody.setText("");
+				txtBody.setForeground(Color.BLACK);
+			}
+		});
+		txtQuestion.setText("Write title here...");
+		txtQuestion.setLineWrap(true);
+		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 20));
+		txtQuestion.setEditable(true);
+		txtQuestion.setBounds(22, 25, 486, 69);
+		panel_1.add(txtQuestion);
 
 		JButton btnSave = new JButton("Save");
 		btnSave.setForeground(Color.WHITE);
@@ -254,22 +271,13 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				createAnswer(txtAnswer.getText().toString(), id, username);
-				QuestionWindow qw = new QuestionWindow(id, username);
-				qw.setVisible(true);
+				createQuestion(txtBody.getText().toString(), txtQuestion.getText().toString(), username);
+				MainWindow mw = new MainWindow(username);
+				mw.setVisible(true);
 				dispose();
 			}
 		});
 		panel_1.add(btnSave);
-
-		JTextArea txtQuestion = new JTextArea();
-		txtQuestion.setWrapStyleWord(true);
-		txtQuestion.setText("Q: " + getPostById(id).getTitle());
-		txtQuestion.setLineWrap(true);
-		txtQuestion.setFont(new Font("Arial", Font.PLAIN, 20));
-		txtQuestion.setEditable(false);
-		txtQuestion.setBounds(22, 25, 486, 69);
-		panel_1.add(txtQuestion);
 
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setForeground(Color.WHITE);
@@ -282,33 +290,33 @@ public class NewAnswerWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				QuestionWindow qw = new QuestionWindow(id, username);
-				qw.setVisible(true);
+				MainWindow mw = new MainWindow(username);
+				mw.setVisible(true);
 				dispose();
 			}
 		});
 		panel_1.add(btnCancel);
 	}
 
-	public void createAnswer(String text, int id, String username) {
+	public void createQuestion(String body, String title, String username) {
 		MongoDBConnector.connect();
 
 		Document d = new Document();
 		d.append("id", getLastId().getId() + 1);
-		d.append("postTypeId", 2);
+		d.append("postTypeId", 1);
 		d.append("acceptedAnswerId", null);
 		d.append("creationDate", LocalDate.now().toString());
 		d.append("score", 0);
 		d.append("viewCount", null);
-		d.append("body", text);
+		d.append("body", body);
 		d.append("ownerUserId", getUserId(username));
-		d.append("title", null);
+		d.append("title", title);
 		d.append("tags", new ArrayList<Object>());
-		d.append("parentId", id);
+		d.append("parentId", null);
 		d.append("comments", new ArrayList<Object>());
 
 		MongoDBConnector.collection.insertOne(d);
-		JOptionPane.showMessageDialog(null, "Answer added succesfully");
+		JOptionPane.showMessageDialog(null, "Question added succesfully");
 	}
 
 	public int getUserId(String username) {

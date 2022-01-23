@@ -97,11 +97,11 @@ public class Post {
 		this.id = id;
 	}
 
-	public int getType() {
+	public int getPostTypeId() {
 		return postTypeId;
 	}
 
-	public void setType(int type) {
+	public void setPostTypeId(int type) {
 		this.postTypeId = type;
 	}
 
@@ -187,10 +187,10 @@ public class Post {
 
 	@Override
 	public String toString() {
-		if (postTypeId == 0) {
-			return "(id:" + id + ") | " + score + " | Q: " + title;
+		if (postTypeId == 1) {
+			return "(id: " + id + ") | score: " + score + " | Q: " + title;
 		} else {
-			return "Answer [score=" + score + "] body=" + body;
+			return "(id: " + id + ") | score: " + score + " | A: " + body;
 		}
 
 	}
