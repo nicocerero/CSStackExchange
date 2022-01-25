@@ -22,6 +22,8 @@ import org.bson.conversions.Bson;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
+import com.mongodb.client.AggregateIterable;
+
 import static com.mongodb.client.model.Filters.*;
 
 import static com.mongodb.client.model.Aggregates.*;
@@ -44,8 +46,6 @@ import javax.swing.JCheckBox;
 
 public class AdminStatisticsWindow extends JFrame {
 
-	// private DefaultListModel<String> model = new DefaultListModel<String>();
-
 	private JPanel contentPane;
 
 	private static final long serialVersionUID = 1L;
@@ -55,10 +55,8 @@ public class AdminStatisticsWindow extends JFrame {
 	String count;
 	String username;
 
-	Document doc;
-	String fin;
-
 	private DefaultListModel<String> model = new DefaultListModel<String>();
+	private DefaultListModel<String> model2 = new DefaultListModel<String>();
 
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -171,13 +169,25 @@ public class AdminStatisticsWindow extends JFrame {
 		list1.setBounds(67, 40, 536, 371);
 
 		JScrollPane scroll = new JScrollPane(list1);
-		scroll.setBounds(84, 315, 273, 97);
+		scroll.setBounds(42, 315, 273, 97);
 		contentPane.add(scroll);
 
 		JLabel lblTopContributors = new JLabel("Top 5 contributors:");
 		lblTopContributors.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblTopContributors.setBounds(85, 289, 136, 21);
+		lblTopContributors.setBounds(54, 289, 136, 21);
 		contentPane.add(lblTopContributors);
+		
+		JList<String> list2 = getQualityOfPosts();
+		list2.setBounds(67, 40, 536, 371);
+
+		JScrollPane scroll2 = new JScrollPane(list2);
+		scroll2.setBounds(360, 315, 300, 97);
+		contentPane.add(scroll2);
+		
+		JLabel lblTopQuality = new JLabel("Top Votes per Post: ");
+		lblTopQuality.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblTopQuality.setBounds(371, 289, 136, 21);
+		contentPane.add(lblTopQuality);
 	}
 
 	public long getPostsCount() {
@@ -215,7 +225,6 @@ public class AdminStatisticsWindow extends JFrame {
 		JList<String> list = new JList<String>(model);
 
 		Bson sortByCount = sortByCount("$ownerUserId");
-		// Bson project = project(fields(excludeId()));
 		Bson limit = limit(5);
 
 		List<Document> results = MongoDBConnector.collection.aggregate(Arrays.asList(sortByCount, limit))
@@ -248,6 +257,34 @@ public class AdminStatisticsWindow extends JFrame {
 			});
 		}
 		return username;
+	}
 
+	private JList<String> getQualityOfPosts() {
+		
+		MongoDBConnector.connect();
+		JList<String> list = new JList<String>(model2);
+		Bson limit = limit(5);
+
+		AggregateIterable<Document> result = MongoDBConnector.collection.aggregate(Arrays.asList(
+				new Document("$group", new Document("_id", "$ownerUserId")
+						.append("Count", new Document("$count", new Document()))
+						.append("sumVotes", new Document("$sum", "$score"))),
+				new Document("$project", new Document("Quality", new Document("$divide", Arrays.asList("$sumVotes", "$Count")))),
+				new Document("$sort", new Document("Quality", -1)),limit));
+
+		Iterator<Document> it = result.iterator();
+
+		if (!it.hasNext()) {
+			System.out.println("Null");
+		}
+
+		while (it.hasNext()) {
+			Document d = it.next();
+			String id = d.get("_id").toString();
+			String quality = d.get("Quality").toString();
+			String string = getUserById(id) + " | Quality of Posts: " + quality;
+			model2.addElement(string);
+		}
+		return list;
 	}
 }
