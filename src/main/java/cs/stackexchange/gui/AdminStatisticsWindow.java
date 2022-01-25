@@ -2,13 +2,18 @@ package cs.stackexchange.gui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 import javax.swing.JList;
 
@@ -17,8 +22,10 @@ import org.bson.conversions.Bson;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
-import com.mongodb.client.model.Filters;
 import static com.mongodb.client.model.Filters.*;
+
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Filters.eq;
 
 import static cs.stackexchange.bd.Neo4jConnector.driver;
 
@@ -46,10 +53,12 @@ public class AdminStatisticsWindow extends JFrame {
 	Neo4jConnector neo4j;
 
 	String count;
+	String username;
 
-	JList<String> list1;
 	Document doc;
 	String fin;
+
+	private DefaultListModel<String> model = new DefaultListModel<String>();
 
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -151,24 +160,37 @@ public class AdminStatisticsWindow extends JFrame {
 					lblTotalQuestions.setVisible(false);
 					lblTotalAnswers.setVisible(false);
 					lblTotalUsers.setBounds(85, 160, 388, 29);
-					
-				};
+
+				}
+				;
 			}
 		});
 		contentPane.add(checkBox);
+
+		JList<String> list1 = getNumberOfPosts();
+		list1.setBounds(67, 40, 536, 371);
+
+		JScrollPane scroll = new JScrollPane(list1);
+		scroll.setBounds(84, 315, 273, 97);
+		contentPane.add(scroll);
+
+		JLabel lblTopContributors = new JLabel("Top 5 contributors:");
+		lblTopContributors.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblTopContributors.setBounds(85, 289, 136, 21);
+		contentPane.add(lblTopContributors);
 	}
 
 	public long getPostsCount() {
 		MongoDBConnector.connect();
 		return MongoDBConnector.collection.countDocuments();
 	}
-	
+
 	public long getQuestionsCount() {
 		MongoDBConnector.connect();
 		Bson query = eq("postTypeId", 1);
 		return MongoDBConnector.collection.countDocuments(query);
 	}
-	
+
 	public long getAnswersCount() {
 		MongoDBConnector.connect();
 		Bson query = eq("postTypeId", 2);
@@ -188,12 +210,44 @@ public class AdminStatisticsWindow extends JFrame {
 		return count;
 	}
 
-	public void delete() {
+	private JList<String> getNumberOfPosts() {
 		MongoDBConnector.connect();
-		int last = list1.getSelectedValue().toString().indexOf(",");
-		System.out.println(list1.getSelectedValue().toString().substring(3, last));
-		MongoDBConnector.collection
-				.deleteOne(Filters.eq("id", Integer.parseInt(list1.getSelectedValue().toString().substring(3, last))));
-		MongoDBConnector.disconnect();
+		JList<String> list = new JList<String>(model);
+
+		Bson sortByCount = sortByCount("$ownerUserId");
+		// Bson project = project(fields(excludeId()));
+		Bson limit = limit(5);
+
+		List<Document> results = MongoDBConnector.collection.aggregate(Arrays.asList(sortByCount, limit))
+				.into(new ArrayList<>());
+
+		Iterator<Document> it = results.iterator();
+
+		if (!it.hasNext()) {
+			System.out.println("Null");
+		}
+
+		while (it.hasNext()) {
+			Document d = it.next();
+			String id = d.get("_id").toString();
+			String count2 = d.get("count").toString();
+			String string = getUserById(id) + " | Number of Posts: " + count2;
+			model.addElement(string);
+		}
+		return list;
+	}
+
+	private String getUserById(String id) {
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+
+		try (Session session = driver.session()) {
+			session.readTransaction(tx -> {
+				Result result = tx.run("MATCH (u:User) WHERE u.id = '" + id + "' RETURN u.username");
+				username = result.single().get(0).toString();
+				return username;
+			});
+		}
+		return username;
+
 	}
 }
