@@ -61,7 +61,7 @@ public class AnswerWindow extends JFrame {
 			public void run() {
 				try {
 
-					AnswerWindow frame = new AnswerWindow(post.getId(), "prueba");
+					AnswerWindow frame = new AnswerWindow(post.getId() ,"prueba");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -209,7 +209,7 @@ public class AnswerWindow extends JFrame {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				QuestionWindow qw = new QuestionWindow(id, username);
+				QuestionWindow qw = new QuestionWindow(post.getParentId(), username);
 				qw.setVisible(true);
 				dispose();
 			}
