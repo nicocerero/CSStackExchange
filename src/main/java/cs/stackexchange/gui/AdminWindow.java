@@ -125,5 +125,22 @@ public class AdminWindow extends JFrame{
 			}
 		});
 		contentPane.add(btnAdministratePost);
+		
+		JButton btnStatistics = new JButton("Statistics");
+		btnStatistics.setForeground(Color.WHITE);
+		btnStatistics.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnStatistics.setBackground(new Color(47, 79, 79));
+		btnStatistics.setBounds(213, 334, 250, 50);
+		btnStatistics.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AdminStatisticsWindow asw = new AdminStatisticsWindow();
+				asw.setVisible(true);
+				dispose();
+			}
+			
+		});
+		contentPane.add(btnStatistics);
 	}
 }

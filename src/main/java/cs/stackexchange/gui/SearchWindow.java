@@ -85,7 +85,7 @@ public class SearchWindow extends JFrame {
 
 		JLabel lblUser = new JLabel("User: " + username);
 		GridBagConstraints gbc_lblUser = new GridBagConstraints();
-		gbc_lblUser.insets = new Insets(0, 0, 5, 0);
+		gbc_lblUser.insets = new Insets(0, 0, 5, 5);
 		gbc_lblUser.gridx = 1;
 		gbc_lblUser.gridy = 0;
 		panel.add(lblUser, gbc_lblUser);
@@ -93,7 +93,7 @@ public class SearchWindow extends JFrame {
 		JButton btnProfile = new JButton("My Profile");
 		GridBagConstraints gbc_btnProfile = new GridBagConstraints();
 		gbc_btnProfile.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnProfile.insets = new Insets(0, 0, 5, 0);
+		gbc_btnProfile.insets = new Insets(0, 0, 5, 5);
 		gbc_btnProfile.gridx = 1;
 		gbc_btnProfile.gridy = 5;
 		btnProfile.addActionListener(new ActionListener() {
@@ -109,7 +109,7 @@ public class SearchWindow extends JFrame {
 		JLabel lblLogout = new JLabel("Logout");
 		lblLogout.setForeground(Color.BLUE);
 		GridBagConstraints gbc_lblLogout = new GridBagConstraints();
-		gbc_lblLogout.insets = new Insets(0, 0, 5, 0);
+		gbc_lblLogout.insets = new Insets(0, 0, 5, 5);
 		gbc_lblLogout.gridx = 1;
 		gbc_lblLogout.gridy = 1;
 		lblLogout.addMouseListener(new MouseAdapter() {
@@ -140,15 +140,25 @@ public class SearchWindow extends JFrame {
 
 		JLabel lblMenu = new JLabel("MENU");
 		GridBagConstraints gbc_lblMenu = new GridBagConstraints();
-		gbc_lblMenu.insets = new Insets(0, 0, 5, 0);
+		gbc_lblMenu.insets = new Insets(0, 0, 5, 5);
 		gbc_lblMenu.gridx = 1;
 		gbc_lblMenu.gridy = 3;
 		panel.add(lblMenu, gbc_lblMenu);
 
 		JButton btnHome = new JButton("Home");
+		btnHome.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MainWindow mw = new MainWindow(username);
+				mw.setVisible(true);
+				dispose();
+
+			}
+		});
 		GridBagConstraints gbc_btnHome = new GridBagConstraints();
 		gbc_btnHome.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnHome.insets = new Insets(0, 0, 5, 0);
+		gbc_btnHome.insets = new Insets(0, 0, 5, 5);
 		gbc_btnHome.gridx = 1;
 		gbc_btnHome.gridy = 4;
 		panel.add(btnHome, gbc_btnHome);
@@ -156,7 +166,7 @@ public class SearchWindow extends JFrame {
 
 		JButton btnNewQuestion = new JButton("New Question");
 		GridBagConstraints gbc_btnNewQuestion = new GridBagConstraints();
-		gbc_btnNewQuestion.insets = new Insets(0, 0, 5, 0);
+		gbc_btnNewQuestion.insets = new Insets(0, 0, 5, 5);
 		gbc_btnNewQuestion.gridx = 1;
 		gbc_btnNewQuestion.gridy = 6;
 		btnNewQuestion.addActionListener(new ActionListener() {
@@ -171,13 +181,105 @@ public class SearchWindow extends JFrame {
 		});
 		panel.add(btnNewQuestion, gbc_btnNewQuestion);
 
-		JLabel lblNewLabel_2 = new JLabel("aaaaaaaaaaaaaaaaa");
-		lblNewLabel_2.setForeground(Color.WHITE);
-		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
-		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel_2.gridx = 1;
-		gbc_lblNewLabel_2.gridy = 8;
-		panel.add(lblNewLabel_2, gbc_lblNewLabel_2);
+		JLabel lblBack = new JLabel("Back");
+		lblBack.setForeground(Color.BLUE);
+		lblBack.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lblBack.setForeground(Color.BLUE);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lblBack.setForeground(Color.RED);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				MainWindow mw = new MainWindow(username);
+				mw.setVisible(true);
+				dispose();
+			}
+		});
+		GridBagConstraints gbc_lblBack = new GridBagConstraints();
+		gbc_lblBack.insets = new Insets(0, 0, 5, 5);
+		gbc_lblBack.gridx = 1;
+		gbc_lblBack.gridy = 7;
+		panel.add(lblBack, gbc_lblBack);
+
+		JLabel lblSpace = new JLabel("aaaaaaaaaaaaaaaaa");
+		lblSpace.setForeground(Color.WHITE);
+		GridBagConstraints gbc_lblSpace = new GridBagConstraints();
+		gbc_lblSpace.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSpace.gridx = 1;
+		gbc_lblSpace.gridy = 8;
+		panel.add(lblSpace, gbc_lblSpace);
+
+		JLabel lblSearch = new JLabel("SEARCH");
+		GridBagConstraints gbc_lblSearch = new GridBagConstraints();
+		gbc_lblSearch.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSearch.gridx = 1;
+		gbc_lblSearch.gridy = 9;
+		panel.add(lblSearch, gbc_lblSearch);
+
+		JTextField textField = new JTextField();
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.gridwidth = 3;
+		gbc_textField.insets = new Insets(0, 0, 5, 0);
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.gridx = 0;
+		gbc_textField.gridy = 10;
+		panel.add(textField, gbc_textField);
+		textField.setColumns(10);
+
+		JButton btnSearch = new JButton("Search");
+		GridBagConstraints gbc_btnSearch = new GridBagConstraints();
+		gbc_btnSearch.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnSearch.insets = new Insets(0, 0, 5, 5);
+		gbc_btnSearch.gridx = 1;
+		gbc_btnSearch.gridy = 11;
+		btnSearch.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (textField.getText().isEmpty() == true || textField.getText().isBlank() == true) {
+						JOptionPane.showMessageDialog(null, "Text is empty");
+					} else {
+						SearchWindow sw = new SearchWindow(username, textField.getText().toString());
+						sw.setVisible(true);
+						dispose();
+					}
+
+				} catch (NullPointerException n) {
+					JOptionPane.showMessageDialog(null, "Text not found: " + n);
+				}
+
+			}
+		});
+		panel.add(btnSearch, gbc_btnSearch);
+
+		JLabel lblSpace2 = new JLabel("aaaaaaaaaaaaaaaaa");
+		lblSpace2.setForeground(Color.WHITE);
+		GridBagConstraints gbc_lblSpace2 = new GridBagConstraints();
+		gbc_lblSpace2.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSpace2.gridx = 1;
+		gbc_lblSpace2.gridy = 12;
+		panel.add(lblSpace2, gbc_lblSpace2);
+
+		/*
+		 * JLabel lblSearchTag = new JLabel("SEARCH BY TAG"); GridBagConstraints
+		 * gbc_lblSearchTag = new GridBagConstraints(); gbc_lblSearchTag.insets = new
+		 * Insets(0, 0, 5, 5); gbc_lblSearchTag.gridx = 1; gbc_lblSearchTag.gridy = 13;
+		 * panel.add(lblSearchTag, gbc_lblSearchTag);
+		 * 
+		 * JComboBox<Tag> comboBox = new JComboBox<Tag>(); GridBagConstraints
+		 * gbc_comboBox = new GridBagConstraints(); gbc_comboBox.insets = new Insets(0,
+		 * 0, 5, 5); gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+		 * gbc_comboBox.gridx = 1; gbc_comboBox.gridy = 14; panel.add(comboBox,
+		 * gbc_comboBox);
+		 */
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
@@ -222,9 +324,9 @@ public class SearchWindow extends JFrame {
 		panel_1.add(textFieldSearch);
 		textFieldSearch.setColumns(10);
 
-		JButton btnSearch = new JButton("Search");
-		btnSearch.setBounds(384, 73, 85, 21);
-		btnSearch.addActionListener(new ActionListener() {
+		JButton btnSearch2 = new JButton("Search");
+		btnSearch2.setBounds(384, 73, 85, 21);
+		btnSearch2.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -234,28 +336,28 @@ public class SearchWindow extends JFrame {
 					} else {
 						search(textFieldSearch.getText().toString());
 					}
-				}catch (NullPointerException n) {
+				} catch (NullPointerException n) {
 					JOptionPane.showMessageDialog(null, "Text not found: " + n);
 				}
-				
 
 			}
 		});
-		panel_1.add(btnSearch);
+		panel_1.add(btnSearch2);
 	}
 
 	public JList<Post> search(String text) {
 		JList<Post> list = new JList<Post>(model);
 		MongoDBConnector.connect();
 
-		Iterator<Document> it = MongoDBConnector.collection.find(Filters.text(text)).sort(descending("score")).iterator();
+		Iterator<Document> it = MongoDBConnector.collection.find(Filters.text(text)).sort(descending("score"))
+				.iterator();
 
 		if (!it.hasNext()) {
 			logger.log(Level.SEVERE, "Post by ID not found.");
 			return null;
 		}
 		model.removeAllElements();
-		
+
 		while (it.hasNext()) {
 			Document d = it.next();
 			Post p = new Post(d);

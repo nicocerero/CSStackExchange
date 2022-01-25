@@ -28,6 +28,7 @@ import static cs.stackexchange.bd.Neo4jConnector.driver;
 import cs.stackexchange.bd.MongoDBConnector;
 import cs.stackexchange.bd.Neo4jConnector;
 import cs.stackexchange.data.Post;
+import cs.stackexchange.data.Tag;
 import cs.stackexchange.data.User;
 
 import javax.swing.JLabel;
@@ -48,6 +49,7 @@ import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
 
 public class MainWindow extends JFrame {
 
@@ -69,7 +71,7 @@ public class MainWindow extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow frame = new MainWindow("prueba");
+					MainWindow frame = new MainWindow("codd");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -106,7 +108,7 @@ public class MainWindow extends JFrame {
 
 		JLabel lblUser = new JLabel("User: " + username);
 		GridBagConstraints gbc_lblUser = new GridBagConstraints();
-		gbc_lblUser.insets = new Insets(0, 0, 5, 0);
+		gbc_lblUser.insets = new Insets(0, 0, 5, 5);
 		gbc_lblUser.gridx = 1;
 		gbc_lblUser.gridy = 0;
 		panel.add(lblUser, gbc_lblUser);
@@ -114,7 +116,7 @@ public class MainWindow extends JFrame {
 		JButton btnProfile = new JButton("My Profile");
 		GridBagConstraints gbc_btnProfile = new GridBagConstraints();
 		gbc_btnProfile.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnProfile.insets = new Insets(0, 0, 5, 0);
+		gbc_btnProfile.insets = new Insets(0, 0, 5, 5);
 		gbc_btnProfile.gridx = 1;
 		gbc_btnProfile.gridy = 5;
 		btnProfile.addActionListener(new ActionListener() {
@@ -130,7 +132,7 @@ public class MainWindow extends JFrame {
 		JLabel lblLogout = new JLabel("Logout");
 		lblLogout.setForeground(Color.BLUE);
 		GridBagConstraints gbc_lblLogout = new GridBagConstraints();
-		gbc_lblLogout.insets = new Insets(0, 0, 5, 0);
+		gbc_lblLogout.insets = new Insets(0, 0, 5, 5);
 		gbc_lblLogout.gridx = 1;
 		gbc_lblLogout.gridy = 1;
 		lblLogout.addMouseListener(new MouseAdapter() {
@@ -161,7 +163,7 @@ public class MainWindow extends JFrame {
 
 		JLabel lblMenu = new JLabel("MENU");
 		GridBagConstraints gbc_lblMenu = new GridBagConstraints();
-		gbc_lblMenu.insets = new Insets(0, 0, 5, 0);
+		gbc_lblMenu.insets = new Insets(0, 0, 5, 5);
 		gbc_lblMenu.gridx = 1;
 		gbc_lblMenu.gridy = 3;
 		panel.add(lblMenu, gbc_lblMenu);
@@ -169,7 +171,7 @@ public class MainWindow extends JFrame {
 		JButton btnHome = new JButton("Home");
 		GridBagConstraints gbc_btnHome = new GridBagConstraints();
 		gbc_btnHome.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnHome.insets = new Insets(0, 0, 5, 0);
+		gbc_btnHome.insets = new Insets(0, 0, 5, 5);
 		gbc_btnHome.gridx = 1;
 		gbc_btnHome.gridy = 4;
 		panel.add(btnHome, gbc_btnHome);
@@ -177,7 +179,7 @@ public class MainWindow extends JFrame {
 
 		JButton btnNewQuestion = new JButton("New Question");
 		GridBagConstraints gbc_btnNewQuestion = new GridBagConstraints();
-		gbc_btnNewQuestion.insets = new Insets(0, 0, 5, 0);
+		gbc_btnNewQuestion.insets = new Insets(0, 0, 5, 5);
 		gbc_btnNewQuestion.gridx = 1;
 		gbc_btnNewQuestion.gridy = 6;
 		btnNewQuestion.addActionListener(new ActionListener() {
@@ -192,17 +194,26 @@ public class MainWindow extends JFrame {
 		});
 		panel.add(btnNewQuestion, gbc_btnNewQuestion);
 
-		JLabel lblNewLabel_2 = new JLabel("aaaaaaaaaaaaaaaaa");
-		lblNewLabel_2.setForeground(Color.WHITE);
-		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
-		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel_2.gridx = 1;
-		gbc_lblNewLabel_2.gridy = 8;
-		panel.add(lblNewLabel_2, gbc_lblNewLabel_2);
+		JLabel lblBack = new JLabel("Back");
+		lblBack.setForeground(Color.BLUE);
+		GridBagConstraints gbc_lblBack = new GridBagConstraints();
+		gbc_lblBack.insets = new Insets(0, 0, 5, 5);
+		gbc_lblBack.gridx = 1;
+		gbc_lblBack.gridy = 7;
+		lblBack.setVisible(false);
+		panel.add(lblBack, gbc_lblBack);
+
+		JLabel lblSpace = new JLabel("aaaaaaaaaaaaaaaaa");
+		lblSpace.setForeground(Color.WHITE);
+		GridBagConstraints gbc_lblSpace = new GridBagConstraints();
+		gbc_lblSpace.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSpace.gridx = 1;
+		gbc_lblSpace.gridy = 8;
+		panel.add(lblSpace, gbc_lblSpace);
 
 		JLabel lblSearch = new JLabel("SEARCH");
 		GridBagConstraints gbc_lblSearch = new GridBagConstraints();
-		gbc_lblSearch.insets = new Insets(0, 0, 5, 0);
+		gbc_lblSearch.insets = new Insets(0, 0, 5, 5);
 		gbc_lblSearch.gridx = 1;
 		gbc_lblSearch.gridy = 9;
 		panel.add(lblSearch, gbc_lblSearch);
@@ -220,7 +231,7 @@ public class MainWindow extends JFrame {
 		JButton btnSearch = new JButton("Search");
 		GridBagConstraints gbc_btnSearch = new GridBagConstraints();
 		gbc_btnSearch.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnSearch.insets = new Insets(0, 0, 5, 0);
+		gbc_btnSearch.insets = new Insets(0, 0, 5, 5);
 		gbc_btnSearch.gridx = 1;
 		gbc_btnSearch.gridy = 11;
 		btnSearch.addActionListener(new ActionListener() {
@@ -235,14 +246,35 @@ public class MainWindow extends JFrame {
 						sw.setVisible(true);
 						dispose();
 					}
-					
-				}catch (NullPointerException n) {
+
+				} catch (NullPointerException n) {
 					JOptionPane.showMessageDialog(null, "Text not found: " + n);
 				}
 
 			}
 		});
 		panel.add(btnSearch, gbc_btnSearch);
+
+		JLabel lblSpace2 = new JLabel("aaaaaaaaaaaaaaaaa");
+		lblSpace2.setForeground(Color.WHITE);
+		GridBagConstraints gbc_lblSpace2 = new GridBagConstraints();
+		gbc_lblSpace2.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSpace2.gridx = 1;
+		gbc_lblSpace2.gridy = 12;
+		panel.add(lblSpace2, gbc_lblSpace2);
+
+		/*
+		 * JLabel lblSearchTag = new JLabel("SEARCH BY TAG"); GridBagConstraints
+		 * gbc_lblSearchTag = new GridBagConstraints(); gbc_lblSearchTag.insets = new
+		 * Insets(0, 0, 5, 5); gbc_lblSearchTag.gridx = 1; gbc_lblSearchTag.gridy = 13;
+		 * panel.add(lblSearchTag, gbc_lblSearchTag);
+		 * 
+		 * JComboBox<Tag> comboBox = new JComboBox<Tag>(); GridBagConstraints
+		 * gbc_comboBox = new GridBagConstraints(); gbc_comboBox.insets = new Insets(0,
+		 * 0, 5, 5); gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+		 * gbc_comboBox.gridx = 1; gbc_comboBox.gridy = 14; panel.add(comboBox,
+		 * gbc_comboBox);
+		 */
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
@@ -366,5 +398,11 @@ public class MainWindow extends JFrame {
 		}
 
 	}
+
+	/*
+	 * public JComboBox<Tag> getTags(){ JComboBox<Tag> cb = new JComboBox<Tag>();
+	 * 
+	 * return null; }
+	 */
 
 }

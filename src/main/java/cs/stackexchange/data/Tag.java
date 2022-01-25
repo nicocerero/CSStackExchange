@@ -35,4 +35,10 @@ public class Tag {
 		this.description = description;
 	}
 
+	@Override
+	public String toString() {
+		return  tagName;
+	}
+	
+	
 }

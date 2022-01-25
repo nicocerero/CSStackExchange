@@ -46,30 +46,37 @@ public class Post {
 		super();
 		this.id = (int) d.get("id");
 		this.postTypeId = (int) d.get("postTypeId");
+		
 		if (d.get("acceptedAnswerId") == null) {
 			this.acceptedAnswerId = 0;
 		} else {
 			this.acceptedAnswerId = (int) d.get("acceptedAnswerId");
 		}
+		
 		this.creationDate = (String) d.get("creationDate").toString();
 		this.score = (int) d.get("score");
+		
 		if (d.get("viewCount") == null) {
 			this.viewCount = 0;
 		} else {
 			this.viewCount = (int) d.get("viewCount");
 		}
+		
 		if (d.get("title") == null) {
 			this.title = "";
 		} else {
 			this.title = (String) d.get("title");
 		}
+		
 		this.body = (String) d.get("body");
 		this.ownerUserId = (int) d.get("ownerUserId");
+		
 		if (d.get("parentId") == null) {
 			this.parentId = 0;
 		} else {
 			this.parentId = (int) d.get("parentId");
 		}
+		
 		// Now, handle the iterators for Tags and Comments.
 		this.tags = new ArrayList<>();
 		Iterator<Document> it_tag = d.getList("tags", Document.class).iterator();
@@ -79,6 +86,7 @@ public class Post {
 				this.tags.add(t);
 			}
 		}
+		
 		this.comments = new ArrayList<>();
 		Iterator<Document> it_com = d.getList("comments", Document.class).iterator();
 		while (it_com.hasNext()) {
