@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import org.neo4j.driver.Result;
@@ -81,7 +82,7 @@ public class UserProfileWindow extends JFrame {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 715, 493);
+		setBounds(100, 100, 737, 493);
 		contentPane = new JPanel();
 
 		contentPane.setBackground(Color.WHITE);
@@ -325,7 +326,12 @@ public class UserProfileWindow extends JFrame {
 		textArea.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		textArea.setBounds(67, 153, 437, 183);
 		textArea.setWrapStyleWord(true);
-		panel_1.add(textArea);
+		textArea.setLineWrap(true);
+		//panel_1.add(textArea);
+		
+		JScrollPane scrollTxt = new JScrollPane(textArea);
+		scrollTxt.setBounds(67, 153, 437, 183);
+		panel_1.add(scrollTxt);
 
 		JLabel lblReputation = new JLabel("Reputation: " + un2);
 		lblReputation.setFont(new Font("Tahoma", Font.PLAIN, 16));

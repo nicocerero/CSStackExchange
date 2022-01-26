@@ -67,6 +67,7 @@ public class MainWindow extends JFrame {
 	List<Record> list;
 	User u;
 	String username2;
+	int userId;
 
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -390,6 +391,17 @@ public class MainWindow extends JFrame {
 						new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnSelectUserScore.setBackground(Color.BLACK);
 		btnSelectUserScore.setBounds(20, 471, 101, 29);
+		btnSelectUserScore.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int last =  listUsers2.getSelectedValue().lastIndexOf("\"");
+				int id2 = getIdByUsername(listUsers2.getSelectedValue().substring(1, last));
+				UserProfileWindow upw = new UserProfileWindow(id2,username);
+				upw.setVisible(true);
+				dispose();
+			}
+		});
 		panel_1.add(btnSelectUserScore);
 		
 		JLabel lblTopUsers = new JLabel("Top 5 users by total score:");
@@ -405,7 +417,7 @@ public class MainWindow extends JFrame {
 
 		Bson projection = fields(include("title", "score", "id", "postTypeId"), excludeId());
 		Iterator<Document> it = MongoDBConnector.collection.find(eq("postTypeId", 1)).projection(projection)
-				.sort(descending("score")).limit(10).iterator();
+				.sort(descending("score")).limit(5).iterator();
 
 		while (it.hasNext()) {
 			Document d = it.next();
@@ -485,4 +497,18 @@ public class MainWindow extends JFrame {
 		}
 		return username2;
 	}
+	
+	private int getIdByUsername(String username) {
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+
+		try (Session session = driver.session()) {
+			session.readTransaction(tx -> {
+				Result result = tx.run("MATCH (u:User) WHERE u.username = \"" + username + "\" RETURN u.id");
+				userId =Integer.parseInt(result.single().get(0).toString());
+				return userId;
+			});
+		}
+		return userId;
+	}
+	
 }
