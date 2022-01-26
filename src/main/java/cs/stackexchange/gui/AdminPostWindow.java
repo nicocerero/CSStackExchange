@@ -143,7 +143,7 @@ public class AdminPostWindow extends JFrame{
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				AdminWindow aw = new AdminWindow();
+				AdminWindow aw = new AdminWindow("admin");
 				aw.setVisible(true);
 				dispose();
 			}

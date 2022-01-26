@@ -336,7 +336,7 @@ public class QuestionWindow extends JFrame {
 		txtBody.setText(post.getBody());
 
 		JScrollPane scrollBody = new JScrollPane(txtBody);
-		scrollBody.setBounds(27, 89, 486, 115);
+		scrollBody.setBounds(27, 89, 461, 115);
 		panel_1.add(scrollBody);
 
 		JLabel lblScore = new JLabel("" + post.getScore());
@@ -345,7 +345,7 @@ public class QuestionWindow extends JFrame {
 		panel_1.add(lblScore);
 
 		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(10, 249, 516, 142);
+		scroll.setBounds(10, 249, 496, 142);
 		panel_1.add(scroll);
 
 		MyCellRenderer cellRenderer = new MyCellRenderer(380);
@@ -377,7 +377,7 @@ public class QuestionWindow extends JFrame {
 		btnNewAnswer.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnNewAnswer.setBackground(Color.BLACK);
-		btnNewAnswer.setBounds(393, 401, 133, 33);
+		btnNewAnswer.setBounds(373, 401, 133, 33);
 		btnNewAnswer.addActionListener(new ActionListener() {
 
 			@Override
@@ -395,7 +395,7 @@ public class QuestionWindow extends JFrame {
 		btnComment.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnComment.setBackground(Color.BLACK);
-		btnComment.setBounds(407, 214, 106, 25);
+		btnComment.setBounds(393, 214, 106, 25);
 		panel_1.add(btnComment);
 
 		JButton btnConfirm = new JButton("Confirm");
@@ -405,7 +405,7 @@ public class QuestionWindow extends JFrame {
 
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnConfirm.setBackground(Color.BLACK);
-		btnConfirm.setBounds(291, 214, 106, 25);
+		btnConfirm.setBounds(275, 214, 106, 25);
 		btnConfirm.setVisible(false);
 		btnConfirm.addActionListener(new ActionListener() {
 
@@ -427,7 +427,7 @@ public class QuestionWindow extends JFrame {
 		btnUpdate.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnUpdate.setBackground(Color.BLACK);
-		btnUpdate.setBounds(291, 214, 106, 25);
+		btnUpdate.setBounds(275, 214, 106, 25);
 
 		if (post.getUserId() == getId(username)) {
 			btnUpdate.setVisible(true);
@@ -451,14 +451,14 @@ public class QuestionWindow extends JFrame {
 
 		JTextArea textTags = new JTextArea();
 		textTags.setText("Tags: " + post.getTags());
-		textTags.setBounds(10, 206, 271, 38);
+		textTags.setBounds(10, 206, 255, 38);
 		textTags.setEditable(false);
 		textTags.setWrapStyleWord(true);
 		textTags.setLineWrap(true);
 		panel_1.add(textTags);
 
 		JLabel lblMadeBy = new JLabel("Created by: " + getOwner(post.getUserId()));
-		lblMadeBy.setBounds(27, 65, 116, 13);
+		lblMadeBy.setBounds(27, 65, 165, 13);
 		panel_1.add(lblMadeBy);
 
 	}
@@ -533,7 +533,7 @@ public class QuestionWindow extends JFrame {
 
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
-				Result result = tx.run("MATCH (u:User) WHERE u.id = '" + id + "' RETURN u.username");
+				Result result = tx.run("MATCH (u:User) WHERE u.id = " + id + " RETURN u.username");
 				owner = result.single().get(0).asString();
 				return owner;
 			});

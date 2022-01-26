@@ -52,12 +52,16 @@ public class UserProfileWindow extends JFrame {
 	int un2;
 	String un3;
 	String un4;
+	boolean check;
 
 	Result update;
 
 	static User user;
 
 	private JTextArea textArea;
+	
+	JButton btnUnfollow;
+	JButton btnFollow;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -305,7 +309,7 @@ public class UserProfileWindow extends JFrame {
 
 		JLabel lblUsername = new JLabel(user.getUsername());
 		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblUsername.setBounds(67, 64, 166, 34);
+		lblUsername.setBounds(67, 22, 305, 34);
 		lblUsername.setForeground(Color.ORANGE);
 		panel_1.add(lblUsername);
 
@@ -325,14 +329,54 @@ public class UserProfileWindow extends JFrame {
 
 		JLabel lblReputation = new JLabel("Reputation: " + un2);
 		lblReputation.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblReputation.setBounds(261, 64, 166, 34);
+		lblReputation.setBounds(67, 66, 166, 34);
 		panel_1.add(lblReputation);
 
 		JLabel lblDate = new JLabel("Creation Date: " + un3);
 		lblDate.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblDate.setBounds(67, 108, 459, 34);
+		lblDate.setBounds(67, 108, 305, 34);
 		panel_1.add(lblDate);
+		
+		btnUnfollow = new JButton("Unfollow");
+		btnUnfollow.setForeground(Color.WHITE);
+		btnUnfollow.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnUnfollow.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"), new LineBorder(Color.RED, 2, true)));
+		btnUnfollow.setBackground(Color.RED);
+		btnUnfollow.setBounds(271, 69, 101, 29);
+		btnUnfollow.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				unfollow(username,user.getUsername());
+				btnFollow.setVisible(true);
+			}
+		});
+		panel_1.add(btnUnfollow);
 
+		btnFollow = new JButton("Follow");
+		btnFollow.setForeground(Color.WHITE);
+		btnFollow.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnFollow.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+				new LineBorder(new Color(0, 0, 0), 2, true)));
+		btnFollow.setBackground(Color.BLACK);
+		btnFollow.setBounds(271, 69, 101, 29);
+		btnFollow.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				follow(username,user.getUsername());
+				btnUnfollow.setVisible(true);
+			}
+		});
+		panel_1.add(btnFollow);
+		
+		if(checkRelationship(username,user.getUsername()) == true) {
+			btnFollow.setVisible(false);
+			btnUnfollow.setVisible(true);
+		}else {
+			btnFollow.setVisible(true);
+			btnUnfollow.setVisible(false);
+		}
 	}
 
 	public String read(int id) {
@@ -340,10 +384,10 @@ public class UserProfileWindow extends JFrame {
 
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
-				Result result = tx.run("MATCH (u:User) WHERE u.id = '" + id + "' RETURN u.aboutMe");
-				Result result2 = tx.run("MATCH (u:User) WHERE u.id = '" + id + "' RETURN u.reputation");
-				Result result3 = tx.run("MATCH (u:User) WHERE u.id = '" + id + "' RETURN u.creationDate");
-				Result result4 = tx.run("MATCH (u:User) WHERE u.id = '" + id + "' RETURN u.username");
+				Result result = tx.run("MATCH (u:User) WHERE u.id = " + id + " RETURN u.aboutMe");
+				Result result2 = tx.run("MATCH (u:User) WHERE u.id = " + id + " RETURN u.reputation");
+				Result result3 = tx.run("MATCH (u:User) WHERE u.id = " + id + " RETURN u.creationDate");
+				Result result4 = tx.run("MATCH (u:User) WHERE u.id = " + id + " RETURN u.username");
 				un = result.single().get(0).asString();
 				un2 = Integer.parseInt(result2.single().get(0).toString().replaceAll("\"", ""));
 				un3 = result3.single().get(0).toString().split("T")[0].replace("\"", "");
@@ -355,4 +399,42 @@ public class UserProfileWindow extends JFrame {
 		return un;
 	}
 
+	public void follow(String follower, String followed) {
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+
+		try (Session session = driver.session()) {
+			session.writeTransaction(tx -> {
+				tx.run("MATCH (u:User), (n:User) WHERE u.username = '" + follower
+						+ "' AND n.username = '" + followed + "' CREATE (u)-[r: FOLLOWS]->(n) RETURN u,n");
+				return null;
+			});
+		}
+	}
+	
+	public void unfollow(String unfollower, String unfollowed) {
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+		
+		try (Session session = driver.session()) {
+			session.writeTransaction(tx -> {
+				tx.run("MATCH (n:User {username: '"+ unfollower +"'})-[r:FOLLOWS]->(u:User {username: '"+ unfollowed +"'})\r\n"
+						+ "DELETE r");
+				return null;
+			});
+		}
+	}
+	
+	public boolean checkRelationship(String user1, String user2) {
+		
+		try (Session session = driver.session()) {
+			session.readTransaction(tx -> {
+				Result result = tx.run("MATCH  (p:User {username : \""+ user1 +"\"}), (b:User {username: \"" + user2 +"\"})"
+						+ "RETURN EXISTS( (p)-[:FOLLOWS]-(b) )");
+				check = result.single().get(0).asBoolean();
+				return check;
+			});
+		}
+		
+		
+		return check;
+	}
 }

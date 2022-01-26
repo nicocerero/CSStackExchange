@@ -15,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
@@ -33,7 +32,7 @@ public class AdminWindow extends JFrame{
 			public void run() {
 				try {
 
-					AdminWindow frame = new AdminWindow();
+					AdminWindow frame = new AdminWindow("admin");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, "ERROR", e);
@@ -43,7 +42,7 @@ public class AdminWindow extends JFrame{
 
 	}
 	
-	public AdminWindow() {
+	public AdminWindow(String username) {
 		
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
@@ -79,36 +78,32 @@ public class AdminWindow extends JFrame{
 		});
 		contentPane.add(btnAdministrateUsers);
 		
-		JLabel lblLogout = new JLabel("Logout");
-		lblLogout.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblLogout.setForeground(Color.BLUE);
-		lblLogout.setHorizontalAlignment(SwingConstants.CENTER);
-		lblLogout.setBounds(39, 32, 61, 16);
-		lblLogout.addMouseListener(new MouseAdapter() {
+		JLabel lblMainWindow = new JLabel("Back to Main");
+		lblMainWindow.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblMainWindow.setForeground(Color.BLUE);
+		lblMainWindow.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMainWindow.setBounds(39, 32, 90, 16);
+		lblMainWindow.addMouseListener(new MouseAdapter() {
 			
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lblLogout.setForeground(Color.BLUE);
+				lblMainWindow.setForeground(Color.BLUE);
 			}
 			
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				lblLogout.setForeground(Color.RED);
+				lblMainWindow.setForeground(Color.RED);
 			}
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				try {
-					LoginWindow lw = new LoginWindow();
-					lw.setVisible(true);
-					dispose();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+				MainWindow mw = new MainWindow(username);
+				mw.setVisible(true);
+				dispose();
 				
 			}
 		});
-		contentPane.add(lblLogout);
+		contentPane.add(lblMainWindow);
 		
 		JButton btnAdministratePost = new JButton("Administrate Post");
 		btnAdministratePost.setForeground(Color.WHITE);

@@ -2,6 +2,7 @@ package cs.stackexchange.gui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,6 +21,8 @@ import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
+import com.mongodb.client.AggregateIterable;
+
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.*;
@@ -28,7 +31,6 @@ import static cs.stackexchange.bd.Neo4jConnector.driver;
 import cs.stackexchange.bd.MongoDBConnector;
 import cs.stackexchange.bd.Neo4jConnector;
 import cs.stackexchange.data.Post;
-import cs.stackexchange.data.Tag;
 import cs.stackexchange.data.User;
 
 import javax.swing.JLabel;
@@ -49,12 +51,12 @@ import java.awt.Font;
 import javax.swing.border.CompoundBorder;
 import javax.swing.UIManager;
 import javax.swing.JTextField;
-import javax.swing.JComboBox;
 
 public class MainWindow extends JFrame {
 
 	private DefaultListModel<Post> model = new DefaultListModel<Post>();
 	private DefaultListModel<User> model2 = new DefaultListModel<User>();
+	private DefaultListModel<String> model3 = new DefaultListModel<String>();
 
 	private JPanel contentPane;
 
@@ -64,6 +66,7 @@ public class MainWindow extends JFrame {
 	Result result;
 	List<Record> list;
 	User u;
+	String username2;
 
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -85,7 +88,7 @@ public class MainWindow extends JFrame {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 715, 493);
+		setBounds(100, 100, 715, 541);
 		contentPane = new JPanel();
 
 		contentPane.setBackground(Color.WHITE);
@@ -100,10 +103,10 @@ public class MainWindow extends JFrame {
 		contentPane.add(panel, BorderLayout.WEST);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 35, 55, 40 };
-		gbl_panel.rowHeights = new int[] { 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gbl_panel.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, Double.MIN_VALUE };
+				0.0, 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
 		JLabel lblUser = new JLabel("User: " + username);
@@ -262,6 +265,28 @@ public class MainWindow extends JFrame {
 		gbc_lblSpace2.gridx = 1;
 		gbc_lblSpace2.gridy = 12;
 		panel.add(lblSpace2, gbc_lblSpace2);
+		
+		JButton btnAdministration = new JButton("Administration");
+		btnAdministration.setVisible(false);
+		if(username.equals("admin")) {
+			btnAdministration.setVisible(true);
+		}
+		btnAdministration.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AdminWindow aw = new AdminWindow(username);
+				aw.setVisible(true);
+				dispose();
+				
+			}
+		});
+		GridBagConstraints gbc_btnAdministration = new GridBagConstraints();
+		gbc_btnAdministration.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnAdministration.insets = new Insets(0, 0, 0, 5);
+		gbc_btnAdministration.gridx = 1;
+		gbc_btnAdministration.gridy = 16;
+		panel.add(btnAdministration, gbc_btnAdministration);
 
 		/*
 		 * JLabel lblSearchTag = new JLabel("SEARCH BY TAG"); GridBagConstraints
@@ -285,7 +310,7 @@ public class MainWindow extends JFrame {
 		listPosts.setBounds(38, 45, 490, 380);
 
 		JScrollPane scroll = new JScrollPane(listPosts);
-		scroll.setBounds(10, 74, 516, 204);
+		scroll.setBounds(10, 74, 492, 96);
 		panel_1.add(scroll);
 
 		JLabel lblStackExchange = new JLabel("CS StackExchange");
@@ -300,7 +325,7 @@ public class MainWindow extends JFrame {
 		btnSelectPost.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnSelectPost.setBackground(Color.BLACK);
-		btnSelectPost.setBounds(10, 277, 101, 29);
+		btnSelectPost.setBounds(20, 169, 101, 29);
 		btnSelectPost.addActionListener(new ActionListener() {
 
 			@Override
@@ -314,21 +339,21 @@ public class MainWindow extends JFrame {
 		});
 		panel_1.add(btnSelectPost);
 
-		JLabel lblTopQuestions = new JLabel("Top 10 questions:");
+		JLabel lblTopQuestions = new JLabel("Top 5 questions:");
 		lblTopQuestions.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblTopQuestions.setBounds(10, 50, 130, 24);
 		panel_1.add(lblTopQuestions);
 
-		JLabel lblTopUsers = new JLabel("Top 5 users:");
-		lblTopUsers.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblTopUsers.setBounds(10, 305, 130, 24);
-		panel_1.add(lblTopUsers);
+		JLabel lblTopUsersRep = new JLabel("Top 5 users by reputation:");
+		lblTopUsersRep.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblTopUsersRep.setBounds(10, 205, 211, 24);
+		panel_1.add(lblTopUsersRep);
 
 		JList<User> listUsers = getUsers();
 		listUsers.setBounds(0, 0, 524, 202);
 
 		JScrollPane scrollUsers = new JScrollPane(listUsers);
-		scrollUsers.setBounds(10, 328, 516, 96);
+		scrollUsers.setBounds(10, 227, 492, 96);
 		panel_1.add(scrollUsers);
 
 		JButton btnSelectUser = new JButton("Select");
@@ -337,7 +362,7 @@ public class MainWindow extends JFrame {
 		btnSelectUser.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnSelectUser.setBackground(Color.BLACK);
-		btnSelectUser.setBounds(10, 423, 101, 29);
+		btnSelectUser.setBounds(20, 322, 101, 29);
 		btnSelectUser.addActionListener(new ActionListener() {
 
 			@Override
@@ -350,6 +375,27 @@ public class MainWindow extends JFrame {
 
 		});
 		panel_1.add(btnSelectUser);
+		
+		JList<String> listUsers2 = getTotalScore();
+		listUsers.setBounds(0, 0, 524, 202);
+		
+		JScrollPane scrollUsersScore = new JScrollPane(listUsers2);
+		scrollUsersScore.setBounds(10, 375, 492, 96);
+		panel_1.add(scrollUsersScore);
+		
+		JButton btnSelectUserScore = new JButton("Select");
+		btnSelectUserScore.setForeground(Color.WHITE);
+		btnSelectUserScore.setFont(new Font("Tahoma", Font.BOLD, 15));
+		btnSelectUserScore.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
+						new LineBorder(new Color(0, 0, 0), 2, true)));
+		btnSelectUserScore.setBackground(Color.BLACK);
+		btnSelectUserScore.setBounds(20, 471, 101, 29);
+		panel_1.add(btnSelectUserScore);
+		
+		JLabel lblTopUsers = new JLabel("Top 5 users by total score:");
+		lblTopUsers.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblTopUsers.setBounds(10, 352, 211, 24);
+		panel_1.add(lblTopUsers);
 
 	}
 
@@ -398,11 +444,45 @@ public class MainWindow extends JFrame {
 		}
 
 	}
+	
+	public JList<String> getTotalScore() {
+		JList<String> jlist = new JList<String>(model3);
+		MongoDBConnector.connect();
 
-	/*
-	 * public JComboBox<Tag> getTags(){ JComboBox<Tag> cb = new JComboBox<Tag>();
-	 * 
-	 * return null; }
-	 */
+		AggregateIterable<Document> result = MongoDBConnector.collection.aggregate(Arrays.asList(new Document("$group", 
+		    new Document("_id", "$ownerUserId")
+		            .append("rep", 
+		    new Document("$sum", "$score"))), 
+		    new Document("$sort", 
+		    new Document("rep", -1L)), 
+		    new Document("$limit", 5L)));
+		
+		Iterator<Document> it = result.iterator();
 
+		if (!it.hasNext()) {
+			System.out.println("Null");
+		}
+
+		while (it.hasNext()) {
+			Document d = it.next();
+			String id = d.get("_id").toString();
+			String votes = d.get("rep").toString();
+			String string = getUserById(id) + " | Total Votes: " + votes;
+			model3.addElement(string);
+		}
+		return jlist;
+	}
+	
+	private String getUserById(String id) {
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
+
+		try (Session session = driver.session()) {
+			session.readTransaction(tx -> {
+				Result result = tx.run("MATCH (u:User) WHERE u.id = " + id + " RETURN u.username");
+				username2 = result.single().get(0).toString();
+				return username2;
+			});
+		}
+		return username2;
+	}
 }

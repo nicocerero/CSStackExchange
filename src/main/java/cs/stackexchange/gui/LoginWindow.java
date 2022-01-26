@@ -127,13 +127,8 @@ public class LoginWindow extends JFrame {
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				if (txtUsername1.getText().toString().equals("admin")) {
-					AdminWindow aw = new AdminWindow();
-					aw.setVisible(true);
-					dispose();
-				} else if (checkUser(txtUsername1.getText()).equals(un)) {
-					//setProp(txtUsername1.getText());
+				
+				if (checkUser(txtUsername1.getText()).equals(un)) {
 					MainWindow mw = new MainWindow(un);
 					mw.setVisible(true);
 					dispose();

@@ -111,7 +111,7 @@ public class AdminStatisticsWindow extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				AdminWindow aw = new AdminWindow();
+				AdminWindow aw = new AdminWindow("admin");
 				aw.setVisible(true);
 				dispose();
 			}
@@ -251,7 +251,7 @@ public class AdminStatisticsWindow extends JFrame {
 
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
-				Result result = tx.run("MATCH (u:User) WHERE u.id = '" + id + "' RETURN u.username");
+				Result result = tx.run("MATCH (u:User) WHERE u.id = " + id + " RETURN u.username");
 				username = result.single().get(0).toString();
 				return username;
 			});
