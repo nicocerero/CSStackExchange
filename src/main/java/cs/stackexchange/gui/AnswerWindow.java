@@ -18,6 +18,10 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
+
+import com.mongodb.client.model.Updates;
+
 import static com.mongodb.client.model.Filters.*;
 
 import cs.stackexchange.bd.MongoDBConnector;
@@ -74,7 +78,7 @@ public class AnswerWindow extends JFrame {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 715, 493);
+		setBounds(100, 100, 740, 493);
 		contentPane = new JPanel();
 
 		contentPane.setBackground(Color.WHITE);
@@ -304,40 +308,31 @@ public class AnswerWindow extends JFrame {
 		lblStackExchange.setBounds(118, 0, 299, 50);
 		panel_1.add(lblStackExchange);
 
+		JList<Comment> list = getPostById(id);
+		list.setBounds(38, 45, 490, 380);
+		
+		JScrollPane scroll = new JScrollPane(list);
+		scroll.setBounds(10, 312, 516, 79);
+		panel_1.add(scroll);
+
 		JTextPane txtAnswer = new JTextPane();
 		txtAnswer.setContentType("text/html");
 		txtAnswer.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 10));
 		txtAnswer.setEditable(false);
 		txtAnswer.setBounds(27, 74, 486, 69);
-
+		txtAnswer.setText(post.getBody());
+		
 		JScrollPane scroll2 = new JScrollPane(txtAnswer);
 		scroll2.setBounds(27, 51, 486, 215);
 		panel_1.add(scroll2);
-
-		JList<Comment> list = getPostById(id);
-		list.setBounds(38, 45, 490, 380);
-		txtAnswer.setText(post.getBody());
 
 		JLabel lblScore = new JLabel(String.valueOf(post.getScore()));
 		lblScore.setHorizontalAlignment(SwingConstants.CENTER);
 		lblScore.setBounds(0, 152, 28, 13);
 		panel_1.add(lblScore);
 
-		JScrollPane scroll = new JScrollPane(list);
-		scroll.setBounds(10, 312, 516, 79);
-		panel_1.add(scroll);
-
 		MyCellRenderer cellRenderer = new MyCellRenderer(380);
 		list.setCellRenderer(cellRenderer);
-
-		JButton btnSelect = new JButton("Select");
-		btnSelect.setForeground(Color.WHITE);
-		btnSelect.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btnSelect.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
-				new LineBorder(new Color(0, 0, 0), 2, true)));
-		btnSelect.setBackground(Color.BLACK);
-		btnSelect.setBounds(10, 401, 133, 33);
-		panel_1.add(btnSelect);
 
 		JButton btnComment = new JButton("Comment");
 		btnComment.setForeground(Color.WHITE);
@@ -346,12 +341,46 @@ public class AnswerWindow extends JFrame {
 				new LineBorder(new Color(0, 0, 0), 2, true)));
 		btnComment.setBackground(Color.BLACK);
 		btnComment.setBounds(393, 401, 133, 33);
+		btnComment.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				NewCommentWindow ncw = new NewCommentWindow(id, username);
+				ncw.setVisible(true);
+				dispose();
+				
+			}
+		});
 		panel_1.add(btnComment);
 
 		JLabel lblComments = new JLabel("Comments:");
 		lblComments.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblComments.setBounds(13, 278, 130, 24);
 		panel_1.add(lblComments);
+		
+		JLabel lblVote = new JLabel("Vote");
+		lblBack.setForeground(Color.BLUE);
+		lblVote.setHorizontalAlignment(SwingConstants.CENTER);
+		lblVote.setBounds(1, 129, 27, 13);
+		lblVote.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lblVote.setForeground(Color.BLUE);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lblVote.setForeground(Color.RED);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				vote(id);
+				lblScore.setText(""+post.getScore());
+			}
+		});
+		panel_1.add(lblVote);
 
 	}
 
@@ -378,6 +407,18 @@ public class AnswerWindow extends JFrame {
 		}
 
 		return list1;
+	}
+	
+	public void vote(int id) {
+		MongoDBConnector.connect();
+		
+		Document query = new Document().append("id",  id);
+		
+		Bson updates = Updates.combine(Updates.set("score", post.getScore()+1));
+		post.setScore(post.getScore() +1);
+		
+		MongoDBConnector.collection.updateOne(query, updates);
+		
 	}
 
 	class MyCellRenderer extends DefaultListCellRenderer {

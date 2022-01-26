@@ -93,7 +93,7 @@ public class QuestionWindow extends JFrame {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 715, 493);
+		setBounds(100, 100, 733, 493);
 		contentPane = new JPanel();
 
 		contentPane.setBackground(Color.WHITE);
@@ -389,15 +389,6 @@ public class QuestionWindow extends JFrame {
 		});
 		panel_1.add(btnNewAnswer);
 
-		JButton btnComment = new JButton("Comment");
-		btnComment.setForeground(Color.WHITE);
-		btnComment.setFont(new Font("Tahoma", Font.BOLD, 15));
-		btnComment.setBorder(new CompoundBorder(UIManager.getBorder("List.noFocusBorder"),
-				new LineBorder(new Color(0, 0, 0), 2, true)));
-		btnComment.setBackground(Color.BLACK);
-		btnComment.setBounds(393, 214, 106, 25);
-		panel_1.add(btnComment);
-
 		JButton btnConfirm = new JButton("Confirm");
 		btnConfirm.setForeground(Color.WHITE);
 		btnConfirm.setFont(new Font("Tahoma", Font.BOLD, 15));
@@ -460,6 +451,30 @@ public class QuestionWindow extends JFrame {
 		JLabel lblMadeBy = new JLabel("Created by: " + getOwner(post.getUserId()));
 		lblMadeBy.setBounds(27, 65, 165, 13);
 		panel_1.add(lblMadeBy);
+		
+		JLabel lblVote = new JLabel("Vote");
+		lblBack.setForeground(Color.BLUE);
+		lblVote.setHorizontalAlignment(SwingConstants.CENTER);
+		lblVote.setBounds(0, 109, 27, 13);
+		lblVote.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lblVote.setForeground(Color.BLUE);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lblVote.setForeground(Color.RED);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				vote(id);
+				lblScore.setText(""+post.getScore());
+			}
+		});
+		panel_1.add(lblVote);
 
 	}
 
@@ -521,7 +536,7 @@ public class QuestionWindow extends JFrame {
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
 				Result result = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.id");
-				idUser = Integer.parseInt(result.single().get(0).asString());
+				idUser = Integer.parseInt(result.single().get(0).toString());
 				return idUser;
 			});
 		}
@@ -559,6 +574,18 @@ public class QuestionWindow extends JFrame {
 
 		}
 
+	}
+	
+	public void vote(int id) {
+		MongoDBConnector.connect();
+		
+		Document query = new Document().append("id",  id);
+		
+		Bson updates = Updates.combine(Updates.set("score", post.getScore()+1));
+		post.setScore(post.getScore() +1);
+		
+		MongoDBConnector.collection.updateOne(query, updates);
+		
 	}
 
 	class MyCellRenderer extends DefaultListCellRenderer {

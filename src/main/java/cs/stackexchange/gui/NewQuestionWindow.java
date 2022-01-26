@@ -406,7 +406,7 @@ public class NewQuestionWindow extends JFrame {
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
 				Result result = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.id");
-				String idOwner = result.single().get(0).asString();
+				String idOwner = result.single().get(0).toString();
 				idOwn = Integer.parseInt(idOwner);
 				return idOwner;
 			});

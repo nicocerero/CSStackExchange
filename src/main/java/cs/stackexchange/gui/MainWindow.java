@@ -88,7 +88,7 @@ public class MainWindow extends JFrame {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 715, 541);
+		setBounds(100, 100, 725, 541);
 		contentPane = new JPanel();
 
 		contentPane.setBackground(Color.WHITE);

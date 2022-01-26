@@ -86,7 +86,7 @@ public class NewCommentWindow extends JFrame {
 		setTitle("CS StackExchange");
 		setIconImage(new ImageIcon(getClass().getResource("images/logo.png")).getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 715, 493);
+		setBounds(100, 100, 737, 493);
 		contentPane = new JPanel();
 
 		contentPane.setBackground(Color.WHITE);
@@ -347,7 +347,7 @@ public class NewCommentWindow extends JFrame {
 				Comment c = new Comment(id, txtComment.getText().toString(), getUserId(username));
 				addComment(id, c);
 
-				QuestionWindow qw = new QuestionWindow(id, username);
+				AnswerWindow qw = new AnswerWindow(id, username);
 				qw.setVisible(true);
 				dispose();
 			}
@@ -380,7 +380,7 @@ public class NewCommentWindow extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				QuestionWindow qw = new QuestionWindow(id, username);
+				AnswerWindow qw = new AnswerWindow(id, username);
 				qw.setVisible(true);
 				dispose();
 			}
@@ -394,7 +394,7 @@ public class NewCommentWindow extends JFrame {
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
 				Result result = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.id");
-				String idOwner = result.single().get(0).asString();
+				String idOwner = result.single().get(0).toString();
 				idOwn = Integer.parseInt(idOwner);
 				return idOwner;
 			});

@@ -402,7 +402,7 @@ public class MyPostsWindow extends JFrame {
 		try (Session session = driver.session()) {
 			session.readTransaction(tx -> {
 				Result result = tx.run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.id");
-				id = Integer.parseInt(result.single().get(0).asString());
+				id = Integer.parseInt(result.single().get(0).toString());
 				return id;
 			});
 		}
