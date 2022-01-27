@@ -19,12 +19,15 @@ import javax.swing.border.LineBorder;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.neo4j.driver.Session;
 
 import com.mongodb.client.model.Updates;
 
 import static com.mongodb.client.model.Filters.*;
+import static cs.stackexchange.bd.Neo4jConnector.driver;
 
 import cs.stackexchange.bd.MongoDBConnector;
+import cs.stackexchange.bd.Neo4jConnector;
 import cs.stackexchange.data.Comment;
 import cs.stackexchange.data.Post;
 
@@ -57,6 +60,8 @@ public class AnswerWindow extends JFrame {
 	public static Post post;
 
 	private static final long serialVersionUID = 1L;
+	
+	Neo4jConnector neo4j;
 
 	public final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -411,6 +416,7 @@ public class AnswerWindow extends JFrame {
 	
 	public void vote(int id) {
 		MongoDBConnector.connect();
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
 		
 		Document query = new Document().append("id",  id);
 		
@@ -418,6 +424,13 @@ public class AnswerWindow extends JFrame {
 		post.setScore(post.getScore() +1);
 		
 		MongoDBConnector.collection.updateOne(query, updates);
+		
+		try (Session session = driver.session()) {
+			session.writeTransaction(tx -> {
+				tx.run("MATCH (p:Post) WHERE p.id = " + id + " SET p.score = " + post.getScore());
+				return null;
+			});
+		}
 		
 	}
 

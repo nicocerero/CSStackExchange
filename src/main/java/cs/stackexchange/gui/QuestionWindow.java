@@ -578,6 +578,7 @@ public class QuestionWindow extends JFrame {
 	
 	public void vote(int id) {
 		MongoDBConnector.connect();
+		neo4j = new Neo4jConnector("bolt://localhost:7687", "neo4j", "12345");
 		
 		Document query = new Document().append("id",  id);
 		
@@ -586,6 +587,12 @@ public class QuestionWindow extends JFrame {
 		
 		MongoDBConnector.collection.updateOne(query, updates);
 		
+		try (Session session = driver.session()) {
+			session.writeTransaction(tx -> {
+				tx.run("MATCH (p:Post) WHERE p.id = " + id + " SET p.score = " + post.getScore());
+				return null;
+			});
+		}
 	}
 
 	class MyCellRenderer extends DefaultListCellRenderer {
